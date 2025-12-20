@@ -18,6 +18,9 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/varitydoc
-            docker compose pull --no-parallel
+            export IMAGE_TAG=${{ github.sha }}
+            sed -i "s|image: jatinnaik16/docvault-backend:.*|image: jatinnaik16/docvault-backend:${IMAGE_TAG}|g" docker-compose.yml
+            sed -i "s|image: jatinnaik16/docvault-frontend:.*|image: jatinnaik16/docvault-frontend:${IMAGE_TAG}|g" docker-compose.yml
+            docker compose pull
             docker compose up -d --force-recreate
 

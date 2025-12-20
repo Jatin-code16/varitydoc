@@ -34,11 +34,12 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: jatinnaik16/docvault-backend:latest
+          tags: jatinnaik16/docvault-backend:${{ github.sha }}
+
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: true
-          tags: jatinnaik16/docvault-frontend:latest
+          tags: jatinnaik16/docvault-frontend:${{ github.sha }}
