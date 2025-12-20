@@ -18,5 +18,6 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/varitydoc
-            docker compose pull
-            docker compose up -d
+            docker compose pull --no-parallel
+            docker compose up -d --force-recreate
+
