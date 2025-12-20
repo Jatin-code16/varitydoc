@@ -106,7 +106,7 @@ function Register({ onNotify }) {
     formData.append("file", file);
 
     try {
-      const response = await api.post("/register", formData, {
+      const response = await ("/register", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
