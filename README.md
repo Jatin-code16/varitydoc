@@ -1,4 +1,4 @@
-# DocVault — Document Verification & Audit Log System
+# VarityDoc - Document Verification & Audit Log System
 
 <div align="center">
 
@@ -17,7 +17,7 @@
 
 ## 📌 Overview
 
-**DocVault** is a production-ready document verification system that ensures document integrity using SHA-256 cryptographic hashing. It provides a complete solution for registering documents, verifying their authenticity, and maintaining comprehensive audit trails—all deployed on Azure with fully automated CI/CD pipelines.
+**VarityDoc** is a production-ready document verification system that ensures document integrity using SHA-256 cryptographic hashing. It provides a complete solution for registering documents, verifying their authenticity, and maintaining comprehensive audit trails—all deployed on Azure with fully automated CI/CD pipelines.
 
 ### 🎯 Key Capabilities
 
@@ -80,11 +80,11 @@
                     ┌───────────────────┼────────────────────┐
                     ▼                   ▼                    ▼
          ┌──────────────────┐  ┌─────────────────┐  ┌──────────────┐
-         │  Azure Blob       │  │  Azure Cosmos   │  │  Local FS    │
-         │  Storage          │  │  DB             │  │  (Temp)      │
-         │  ──────────       │  │  ───────────    │  │  ────────    │
-         │  • Documents      │  │  • Metadata     │  │  • Uploads   │
-         │  • Binary Storage │  │  • Audit Logs   │  │  • Hash Temp │
+         │  Azure Blob      │  │  Azure Cosmos   │  │  Local FS    │
+         │  Storage         │  │  DB             │  │  (Temp)      │
+         │  ──────────      │  │  ───────────    │  │  ────────    │
+         │  • Documents     │  │  • Metadata     │  │  • Uploads   │
+         │  • Binary Storage│  │  • Audit Logs   │  │  • Hash Temp │
          └──────────────────┘  └─────────────────┘  └──────────────┘
 ```
 
@@ -715,8 +715,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Jatin**  
-B.Tech Final Year Project — Cloud Computing & DevOps
+**Jatin Naik**  
+Azure Major Project - Cloud Computing & DevOps
 
 **Project Focus Areas:**
 - Cloud-native architecture (Azure)
@@ -740,8 +740,8 @@ B.Tech Final Year Project — Cloud Computing & DevOps
 ## 📞 Support
 
 For issues, questions, or contributions:
-- Open an issue on [GitHub Issues](https://github.com/yourusername/docvault/issues)
-- Contact: your.email@example.com
+- Open an issue on [GitHub Issues](https://github.com/Jatin-code16/varitydoc/issues)
+- Contact: jatinnaiknawa2@gmail.com
 
 ---
 
