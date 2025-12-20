@@ -72,9 +72,7 @@ function App() {
       <header className="appHeader">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 style={{ color: "red" }}> DocVault 🚨 VERSION 999 </h1>
-
-            <h1 className="appTitle">DocVault</h1>
+            <h1 className="appTitle">DocVault - COMMIT TEST B</h1>
             <p className="appSubtitle">Secure document registration and verification</p>
             <div className="mt-3 flex flex-wrap gap-2" aria-label="Security badges">
               <span className="chip">SHA-256</span>
