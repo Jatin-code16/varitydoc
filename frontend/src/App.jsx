@@ -77,7 +77,7 @@ function App() {
             <div className="mt-3 flex flex-wrap gap-2" aria-label="Security badges">
               <span className="chip">SHA-256</span>
               <span className="chip">Audit trail</span>
-              <span className="chip">Tamper detection</span>
+              <span className="chip">Document Verification & Tamper detection</span>
             </div>
           </div>
 
