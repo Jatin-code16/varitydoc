@@ -1,12 +1,14 @@
 name: Deploy to Azure VM
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Build and Push Docker Images"]
+    types:
+      - completed
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -18,9 +20,8 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/varitydoc
-            export IMAGE_TAG=${{ github.sha }}
+            export IMAGE_TAG=${{ github.event.workflow_run.head_sha }}
             sed -i "s|image: jatinnaik16/docvault-backend:.*|image: jatinnaik16/docvault-backend:${IMAGE_TAG}|g" docker-compose.yml
             sed -i "s|image: jatinnaik16/docvault-frontend:.*|image: jatinnaik16/docvault-frontend:${IMAGE_TAG}|g" docker-compose.yml
             docker compose pull
             docker compose up -d --force-recreate
-
