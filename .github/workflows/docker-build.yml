@@ -22,6 +22,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # 🔹 FRONTEND BUILD STEP (THIS WAS MISSING)
+      - name: Build frontend (Vite)
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
