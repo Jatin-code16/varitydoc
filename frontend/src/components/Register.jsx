@@ -106,7 +106,7 @@ function Register({ onNotify }) {
     formData.append("file", file);
 
     try {
-      const response = await ("/register", formData, {
+      const response = await api.post("/register", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -117,6 +117,7 @@ function Register({ onNotify }) {
           setProgress(pct);
         },
       });
+
 
       setResult(response.data);
       onNotify?.({
