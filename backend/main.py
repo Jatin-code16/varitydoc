@@ -4,6 +4,11 @@ import shutil
 from dotenv import load_dotenv
 from blob_service import upload_file_to_blob
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from user_service import get_user_by_username, create_user
+from auth import verify_password, create_access_token
+from dependencies import get_current_user
 
 
 load_dotenv()
@@ -122,7 +127,16 @@ async def verify_document(file: UploadFile = File(...)):
 
 
 @app.get("/audit-logs")
-async def read_audit_logs():
+async def read_audit_logs(
+    current_user=Depends(get_current_user)
+):
+    # 🔐 RBAC check
+    if current_user["role"] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+
     try:
         logs = get_audit_logs()
         return {
@@ -131,3 +145,58 @@ async def read_audit_logs():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = get_user_by_username(form_data.username)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+        )
+
+    if not verify_password(form_data.password, user["password_hash"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+        )
+
+    access_token = create_access_token(
+        data={"sub": user["username"], "role": user["role"]}
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "role": user["role"],
+    }
+
+
+@app.post("/admin/create-user")
+def admin_create_user(
+    username: str,
+    password: str,
+    role: str = "user",
+    current_user=Depends(get_current_user)
+):
+    # 🔐 Only admin can create users
+    if current_user["role"] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+
+    existing = get_user_by_username(username)
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User already exists"
+        )
+
+    user = create_user(username, password, role)
+    return {
+        "message": "User created successfully",
+        "username": user["username"],
+        "role": user["role"]
+    }
