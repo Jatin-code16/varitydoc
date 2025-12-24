@@ -278,6 +278,9 @@ class UserCreateRequest(BaseModel):
     email: str = None
     role: str = "document_owner"
 
+class RoleUpdateRequest(BaseModel):
+    new_role: str
+
 
 # ============ PUBLIC AUTHENTICATION ENDPOINTS ============
 
@@ -431,7 +434,7 @@ def admin_create_user(
 @app.put("/admin/users/{username}/role")
 def update_role(
     username: str,
-    new_role: str,
+    request: RoleUpdateRequest,
     current_user=Depends(get_current_user)
 ):
     """Update user role (Admin only)"""
@@ -442,14 +445,14 @@ def update_role(
         )
     
     try:
-        user = update_user_role(username, new_role)
+        user = update_user_role(username, request.new_role)
         logger.info(
             "User role updated",
             extra={
                 "event": "role_update",
                 "admin": current_user["username"],
                 "target_user": username,
-                "new_role": new_role
+                "new_role": request.new_role
             }
         )
         return {
