@@ -87,19 +87,30 @@ function Register({ onNotify, onAlertCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Clear any previous messages first
+    resetMessages();
+
     if (!file) {
       setError("Please select a file");
+      onNotify?.({
+        title: "Validation Error",
+        message: "Please select a file",
+        variant: "error",
+      });
       return;
     }
 
     if (validationError) {
       setError(validationError);
+      onNotify?.({
+        title: "Validation Error",
+        message: validationError,
+        variant: "error",
+      });
       return;
     }
 
     setLoading(true);
-    setError(null);
-    setResult(null);
     setProgress(0);
 
     const formData = new FormData();
@@ -118,25 +129,30 @@ function Register({ onNotify, onAlertCreated }) {
         },
       });
 
-
+      // Clear any error state before setting success
+      setError(null);
       setResult(response.data);
+      
       onNotify?.({
-        title: "Registered",
-        message: `Document ${response.data.signature ? 'signed and ' : ''}stored successfully.`,
+        title: "Success",
+        message: `Document ${response.data.signature ? 'digitally signed and ' : ''}registered successfully.`,
         variant: "success",
       });
       
       // Notify parent about alert creation
-      if (props.onAlertCreated) {
-        props.onAlertCreated();
+      if (onAlertCreated) {
+        onAlertCreated();
       }
     } catch (err) {
-      setError(
-        err.response?.data?.detail || "Failed to register document"
-      );
+      const errorMessage = err.response?.data?.detail || "Failed to register document";
+      
+      // Clear any result state before setting error
+      setResult(null);
+      setError(errorMessage);
+      
       onNotify?.({
-        title: "Register failed",
-        message: err.response?.data?.detail || "Failed to register document",
+        title: "Registration Failed",
+        message: errorMessage,
         variant: "error",
       });
     } finally {

@@ -8,6 +8,8 @@ import RoleBadge from "./components/RoleBadge";
 import AdminDashboard from "./components/AdminDashboard";
 import UserProfile from "./components/UserProfile";
 import DocumentBrowser from "./components/DocumentBrowser";
+import ParticleBackground from "./components/ParticleBackground";
+import AnimatedGradientBg from "./components/AnimatedGradientBg";
 import api from "./api/client";
 import "./App.css";
 
@@ -157,7 +159,10 @@ function App() {
 
   /* ---------- UI ---------- */
   return (
-    <div className="appShell">
+    <>
+      <AnimatedGradientBg />
+      <ParticleBackground />
+      <div className="appShell">
       
       {/* HEADER: Unified into one glass panel */}
       <header className="appHeader">
@@ -330,6 +335,7 @@ function App() {
 
       <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
+    </>
   );
 }
 
