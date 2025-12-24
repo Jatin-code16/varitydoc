@@ -3,6 +3,12 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import Verify from "./components/Verify";
 import AuditLogs from "./components/AuditLogs";
+import AlertPanel from "./components/AlertPanel";
+import RoleBadge from "./components/RoleBadge";
+import AdminDashboard from "./components/AdminDashboard";
+import UserProfile from "./components/UserProfile";
+import DocumentBrowser from "./components/DocumentBrowser";
+import api from "./api/client";
 import "./App.css";
 
 /* ---------------- TOAST COMPONENT ---------------- */
@@ -46,6 +52,10 @@ function App() {
 
   const [activeTab, setActiveTab] = useState("register");
   const [toast, setToast] = useState(null);
+  const [alertPanelOpen, setAlertPanelOpen] = useState(false);
+  const [unreadAlerts, setUnreadAlerts] = useState(0);
+  const [userPermissions, setUserPermissions] = useState([]);
+  
   const notify = (payload) => {
     const next = {
       title: payload?.title ?? "Notice",
@@ -69,9 +79,16 @@ function App() {
     const baseTabs = [
       { id: "register", label: "Register", description: "Store a document hash" },
       { id: "verify", label: "Verify", description: "Check document authenticity" },
+      { id: "documents", label: "Documents", description: "Browse all documents" },
+      { id: "profile", label: "Profile", description: "Account settings" },
     ];
 
     if (auth?.role === "admin") {
+      baseTabs.push({
+        id: "dashboard",
+        label: "Dashboard",
+        description: "Admin overview",
+      });
       baseTabs.push({
         id: "audit",
         label: "Audit logs",
@@ -91,6 +108,27 @@ function App() {
     localStorage.setItem("docvault.theme", themePref);
   }, [themePref]);
 
+  // Fetch user info and unread alerts when authenticated
+  useEffect(() => {
+    if (!auth) return;
+
+    const fetchUserInfo = async () => {
+      try {
+        const response = await api.get("/me");
+        setUnreadAlerts(response.data.unread_alerts || 0);
+        setUserPermissions(response.data.permissions || []);
+      } catch (err) {
+        console.error("Failed to fetch user info:", err);
+      }
+    };
+
+    fetchUserInfo();
+    
+    // Poll for new alerts every 60 seconds
+    const interval = setInterval(fetchUserInfo, 60000);
+    return () => clearInterval(interval);
+  }, [auth]);
+
   // 2️⃣ HANDLERS
 
   const handleLogin = (authData) => {
@@ -102,6 +140,13 @@ function App() {
     setAuth(null);
     localStorage.removeItem("docvault.auth");
     setActiveTab("register");
+  };
+
+  const refreshUnreadAlerts = () => {
+    if (!auth) return;
+    api.get("/me")
+      .then((res) => setUnreadAlerts(res.data.unread_alerts || 0))
+      .catch(console.error);
   };
 
   // 3️⃣ NOW IT IS SAFE TO RETURN CONDITIONALLY
@@ -131,6 +176,22 @@ function App() {
 
             {/* User & Logout Area */}
             <div className="flex items-center gap-4">
+              
+              {/* Alert Bell */}
+              <button
+                className="alertBellBtn"
+                onClick={() => setAlertPanelOpen(true)}
+                title="Notifications"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                {unreadAlerts > 0 && (
+                  <span className="alertBellBadge">{unreadAlerts > 9 ? '9+' : unreadAlerts}</span>
+                )}
+              </button>
+
               {/* User Badge */}
               <div className="userBadge">
                 <div className="userAvatar">
@@ -138,12 +199,7 @@ function App() {
                 </div>
                 <div className="userInfo">
                   <div className="userName">{auth?.username || 'User'}</div>
-                  <div className="userRole">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    {auth?.role || 'user'}
-                  </div>
+                  <RoleBadge role={auth?.role} />
                 </div>
               </div>
 
@@ -251,12 +307,26 @@ function App() {
       </nav>
 
       <main className="panel">
-        {activeTab === "register" && <Register onNotify={notify} />}
-        {activeTab === "verify" && <Verify onNotify={notify} />}
+        {activeTab === "register" && <Register onNotify={notify} onAlertCreated={refreshUnreadAlerts} />}
+        {activeTab === "verify" && <Verify onNotify={notify} onAlertCreated={refreshUnreadAlerts} />}
+        {activeTab === "documents" && <DocumentBrowser onNotify={notify} currentUser={auth} />}
+        {activeTab === "profile" && <UserProfile onNotify={notify} currentUser={auth} />}
+        {activeTab === "dashboard" && auth.role === "admin" && (
+          <AdminDashboard onNotify={notify} />
+        )}
         {activeTab === "audit" && auth.role === "admin" && (
           <AuditLogs onNotify={notify} />
         )}
       </main>
+
+      <AlertPanel 
+        isOpen={alertPanelOpen} 
+        onClose={() => {
+          setAlertPanelOpen(false);
+          refreshUnreadAlerts();
+        }} 
+        onNotify={notify}
+      />
 
       <Toast toast={toast} onClose={() => setToast(null)} />
     </div>

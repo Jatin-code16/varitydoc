@@ -1,1 +1,10 @@
-hello Jatin 
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+azure-storage-blob
+azure-cosmos
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+opencensus-ext-azure

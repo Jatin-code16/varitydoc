@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/client";
 
-function Register({ onNotify }) {
+function Register({ onNotify, onAlertCreated }) {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -122,9 +122,14 @@ function Register({ onNotify }) {
       setResult(response.data);
       onNotify?.({
         title: "Registered",
-        message: "Document hash stored successfully.",
+        message: `Document ${response.data.signature ? 'signed and ' : ''}stored successfully.`,
         variant: "success",
       });
+      
+      // Notify parent about alert creation
+      if (props.onAlertCreated) {
+        props.onAlertCreated();
+      }
     } catch (err) {
       setError(
         err.response?.data?.detail || "Failed to register document"
@@ -274,7 +279,18 @@ function Register({ onNotify }) {
                   <span>Registered</span>
                   <span className="badge badgeAccent">SUCCESS</span>
                 </div>
-                <div className="statusBoxBody">The hash has been stored for future verification.</div>
+                <div className="statusBoxBody">
+                  The hash has been stored for future verification.
+                  {result.signature && (
+                    <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <polyline points="9 12 11 14 15 10"/>
+                      </svg>
+                      <span>Digitally signed with Azure Key Vault</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="kv">
@@ -315,6 +331,29 @@ function Register({ onNotify }) {
                   <div className="kvKey">Storage</div>
                   <div>{result.storage ?? "—"}</div>
                 </div>
+                {result.signature && (
+                  <>
+                    <div className="kvRow">
+                      <div className="kvKey">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "4px" }}>
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        Signature
+                      </div>
+                      <div className="mono" style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>
+                        {result.signature.substring(0, 50)}...
+                      </div>
+                    </div>
+                    <div className="kvRow">
+                      <div className="kvKey">Algorithm</div>
+                      <div>{result.signature_algorithm || "RSA-2048"}</div>
+                    </div>
+                    <div className="kvRow">
+                      <div className="kvKey">Signed by</div>
+                      <div>{result.signed_by || "—"}</div>
+                    </div>
+                  </>
+                )}
               </div>
             </>
           )}

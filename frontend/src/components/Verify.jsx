@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/client";
 
-function Verify({ onNotify }) {
+function Verify({ onNotify, onAlertCreated }) {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -152,6 +152,11 @@ function Verify({ onNotify }) {
           : "Hash mismatch detected. Please check the file.",
         variant: ok ? "success" : "error",
       });
+      
+      // Notify parent about alert creation (if tampering detected)
+      if (!ok && onAlertCreated) {
+        onAlertCreated();
+      }
     } catch (err) {
       setError(
         err.response?.data?.detail || "Verification failed"
@@ -399,6 +404,59 @@ function Verify({ onNotify }) {
                     </span>
                   </div>
                 </div>
+                
+                {/* Signature Verification Section */}
+                {result.signature_valid !== undefined && (
+                  <>
+                    <div className="kvRow">
+                      <div className="kvKey">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "4px" }}>
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        Signature Status
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {result.signature_valid ? (
+                          <>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            <span style={{ color: "var(--success)" }}>Valid</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10"/>
+                              <line x1="15" y1="9" x2="9" y2="15"/>
+                              <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                            <span style={{ color: "var(--error)" }}>Invalid</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {result.signature && (
+                      <div className="kvRow">
+                        <div className="kvKey">Signature</div>
+                        <div className="mono" style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>
+                          {result.signature.substring(0, 50)}...
+                        </div>
+                      </div>
+                    )}
+                    {result.signed_by && (
+                      <div className="kvRow">
+                        <div className="kvKey">Signed by</div>
+                        <div>{result.signed_by}</div>
+                      </div>
+                    )}
+                    {result.signature_algorithm && (
+                      <div className="kvRow">
+                        <div className="kvKey">Algorithm</div>
+                        <div>{result.signature_algorithm}</div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </>
           )}

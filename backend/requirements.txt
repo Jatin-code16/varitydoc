@@ -4,6 +4,9 @@ python-multipart
 python-dotenv
 azure-storage-blob
 azure-cosmos
+azure-keyvault-keys
+azure-identity
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
+opencensus-ext-azure

@@ -1,12 +1,18 @@
 import { useState } from "react";
 import api from "../api/client";
+import Signup from "./Signup";
 
 function Login({ onLogin }) {
+  const [showSignup, setShowSignup] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  if (showSignup) {
+    return <Signup onBackToLogin={() => setShowSignup(false)} />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -142,6 +148,19 @@ function Login({ onLogin }) {
 
         {/* Footer */}
         <div className="loginFooter">
+          <div className="loginSignupPrompt">
+            <p>
+              Don't have an account?{" "}
+              <button
+                type="button"
+                className="loginLink"
+                onClick={() => setShowSignup(true)}
+                disabled={loading}
+              >
+                Sign up here
+              </button>
+            </p>
+          </div>
           <div className="loginFeatures">
             <div className="loginFeature">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
