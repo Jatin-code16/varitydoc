@@ -374,8 +374,8 @@ SSH into your Azure VM, install Docker & Docker Compose.
 
 ```bash
 # Configure environment
-git clone https://github.com/yourusername/docvault.git
-cd docvault
+git clone https://github.com/Jatin-code16/varitydoc.git
+cd varitydoc
 cp backend/.env.example backend/.env
 # Add Azure credentials
 ```
