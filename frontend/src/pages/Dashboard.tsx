@@ -46,7 +46,7 @@ export const Dashboard: React.FC = () => {
       key: 'timestamp',
       header: 'Time',
       render: (log: AuditLog) => (
-        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>
+        <span className="text-xs text-gray-400 whitespace-nowrap">
           {formatTimestamp(log.timestamp)}
         </span>
       ),
@@ -62,8 +62,24 @@ export const Dashboard: React.FC = () => {
       ),
       width: '100px',
     },
-    { key: 'user', header: 'User', render: (log: AuditLog) => log.user },
-    { key: 'document', header: 'Document', render: (log: AuditLog) => log.document_name },
+    { 
+      key: 'user', 
+      header: 'User', 
+      render: (log: AuditLog) => (
+        <span className="block break-words md:truncate md:max-w-[150px]" title={log.user}>
+          {log.user}
+        </span>
+      )
+    },
+    { 
+      key: 'document', 
+      header: 'Document', 
+      render: (log: AuditLog) => (
+        <span className="block break-words md:truncate md:max-w-[200px]" title={log.document_name}>
+          {log.document_name}
+        </span>
+      )
+    },
     {
       key: 'result',
       header: 'Result',
@@ -78,25 +94,25 @@ export const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <h1>Dashboard</h1>
-        <p>System overview and quick actions</p>
+    <div className="max-w-[1440px] mx-auto">
+      <div className="mb-8 md:mb-12">
+        <h1 className="text-2xl md:text-4xl font-black uppercase text-black mb-2 tracking-tighter">Dashboard</h1>
+        <p className="text-base md:text-lg text-gray-600">System overview and quick actions</p>
       </div>
 
-      <div className="dashboard-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Hero Tile: Verification Status */}
-        <Card className="dashboard-tile tile-hero" hover>
+        <Card className="col-span-1 sm:col-span-2 lg:col-span-2 min-h-[200px]" hover>
           <CardHeader>
             <CardTitle>Verification Status</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="tile-metric">
-              <span className="tile-number">{documents.length}</span>
-              <span className="tile-label">Total Documents</span>
+            <div className="flex flex-col gap-2">
+              <span className="text-5xl md:text-6xl font-black leading-none">{documents.length}</span>
+              <span className="text-sm font-bold uppercase tracking-widest">Total Documents</span>
             </div>
             {verifiedToday > 0 && (
-              <div className="tile-trend">
+              <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-sm font-bold rounded-none">
                 <TrendingUp size={16} />
                 <span>+{verifiedToday} verified today</span>
               </div>
@@ -105,79 +121,85 @@ export const Dashboard: React.FC = () => {
         </Card>
 
         {/* Compact Tile: Open Alerts */}
-        <Card className="dashboard-tile tile-compact" hover>
+        <Card className="col-span-1 min-h-[200px]" hover>
           <CardContent>
-            <div className="tile-compact-content">
+            <div className="flex items-center gap-4 mb-4">
               <AlertTriangle size={32} color={criticalAlerts > 0 ? 'var(--critical-text)' : 'var(--text-tertiary)'} />
-              <div className="tile-metric">
-                <span className="tile-number-compact">{openAlerts}</span>
-                <span className="tile-label">Open Alerts</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold leading-none">{openAlerts}</span>
+                <span className="text-sm font-bold uppercase tracking-widest">Open Alerts</span>
               </div>
             </div>
-            <Link to="/alerts" className="tile-link">
+            <Link to="/alerts" className="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700">
               View All <ArrowRight size={14} />
             </Link>
           </CardContent>
         </Card>
 
         {/* Compact Tile: Active Users */}
-        <Card className="dashboard-tile tile-compact" hover>
+        <Card className="col-span-1 min-h-[200px]" hover>
           <CardContent>
-            <div className="tile-compact-content">
-              <Shield size={32} color="var(--primary-500)" />
-              <div className="tile-metric">
-                <span className="tile-number-compact">12</span>
-                <span className="tile-label">Active Users</span>
+            <div className="flex items-center gap-4">
+              <Shield size={32} className="text-primary-500" />
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold leading-none">12</span>
+                <span className="text-sm font-bold uppercase tracking-widest">Active Users</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Quick Action Tiles */}
-        <Link to="/verify" className="dashboard-tile tile-action">
-          <Card hover>
-            <CardContent>
-              <Shield size={32} />
-              <h3>Verify New</h3>
-              <p>Check document authenticity</p>
-              <ArrowRight size={20} className="tile-action-arrow" />
+        <Link to="/verify" className="col-span-1 block no-underline">
+          <Card hover className="h-full">
+            <CardContent className="h-full flex flex-col justify-between">
+              <div>
+                <Shield size={32} className="mb-4" />
+                <h3 className="text-xl font-bold mb-2">Verify New</h3>
+                <p className="text-gray-600">Check document authenticity</p>
+              </div>
+              <ArrowRight size={20} className="mt-4 self-end" />
             </CardContent>
           </Card>
         </Link>
 
-        <Link to="/register" className="dashboard-tile tile-action">
-          <Card hover>
-            <CardContent>
-              <FileCheck size={32} />
-              <h3>Register Document</h3>
-              <p>Add new document to system</p>
-              <ArrowRight size={20} className="tile-action-arrow" />
+        <Link to="/register" className="col-span-1 block no-underline">
+          <Card hover className="h-full">
+            <CardContent className="h-full flex flex-col justify-between">
+              <div>
+                <FileCheck size={32} className="mb-4" />
+                <h3 className="text-xl font-bold mb-2">Register Document</h3>
+                <p className="text-gray-600">Add new document to system</p>
+              </div>
+              <ArrowRight size={20} className="mt-4 self-end" />
             </CardContent>
           </Card>
         </Link>
 
-        <Link to="/audit" className="dashboard-tile tile-action">
-          <Card hover>
-            <CardContent>
-              <ScrollText size={32} />
-              <h3>View Logs & Audit</h3>
-              <p>Browse system activity</p>
-              <ArrowRight size={20} className="tile-action-arrow" />
+        <Link to="/audit" className="col-span-1 block no-underline">
+          <Card hover className="h-full">
+            <CardContent className="h-full flex flex-col justify-between">
+              <div>
+                <ScrollText size={32} className="mb-4" />
+                <h3 className="text-xl font-bold mb-2">View Logs & Audit</h3>
+                <p className="text-gray-600">Browse system activity</p>
+              </div>
+              <ArrowRight size={20} className="mt-4 self-end" />
             </CardContent>
           </Card>
         </Link>
 
         {/* Recent Audit Events */}
-        <Card className="dashboard-tile tile-wide">
+        <Card className="col-span-1 sm:col-span-2 lg:col-span-3">
           <CardHeader>
             <CardTitle>Recent Audit Events</CardTitle>
           </CardHeader>
           <CardContent>
             <Table columns={auditColumns} data={auditLogs} isLoading={isLoading} emptyMessage="No audit events yet" />
             {auditLogs.length > 0 && (
-              <div style={{ marginTop: 'var(--spacing-md)', textAlign: 'right' }}>
-                <Link to="/audit" style={{ fontSize: 'var(--text-sm)', color: 'var(--primary-600)' }}>
-                  View All Logs <ArrowRight size={14} style={{ display: 'inline', verticalAlign: 'middle' }} />
+              <div className="mt-4 text-right">
+                <Link to="/audit" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center justify-end gap-1">
+                  View All Logs <ArrowRight size={14} />
                 </Link>
               </div>
             )}
@@ -185,35 +207,35 @@ export const Dashboard: React.FC = () => {
         </Card>
 
         {/* System Health */}
-        <Card className="dashboard-tile tile-sidebar">
+        <Card className="col-span-1 md:col-span-4">
           <CardHeader>
             <CardTitle>System Health</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="health-list">
-              <div className="health-item">
-                <span>Database</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                <span className="font-medium">Database</span>
                 <Badge variant="status" type="OK">
                   <Check size={14} />
                   OK
                 </Badge>
               </div>
-              <div className="health-item">
-                <span>Storage</span>
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                <span className="font-medium">Storage</span>
                 <Badge variant="status" type="OK">
                   <Check size={14} />
                   OK
                 </Badge>
               </div>
-              <div className="health-item">
-                <span>Auth</span>
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                <span className="font-medium">Auth</span>
                 <Badge variant="status" type="OK">
                   <Check size={14} />
                   OK
                 </Badge>
               </div>
             </div>
-            <p className="health-timestamp">Last check: 2 minutes ago</p>
+            <p className="mt-4 text-xs text-gray-400 text-right">Last check: 2 minutes ago</p>
           </CardContent>
         </Card>
       </div>

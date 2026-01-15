@@ -49,13 +49,13 @@ export const Users: React.FC = () => {
       key: 'username',
       header: 'Username',
       render: (user: any) => (
-        <div style={{ fontWeight: 'var(--font-medium)' }}>{user.username}</div>
+        <span className="font-medium text-base block break-words md:truncate md:max-w-[200px]" title={user.username}>{user.username}</span>
       ),
     },
     {
       key: 'email',
       header: 'Email',
-      render: (user: any) => user.email || '-',
+      render: (user: any) => <span className="block break-words md:truncate md:max-w-[250px]" title={user.email}>{user.email || '-'}</span>,
     },
     {
       key: 'role',
@@ -65,16 +65,17 @@ export const Users: React.FC = () => {
           {user.role}
         </Badge>
       ),
+      width: '140px'
     },
     {
       key: 'created_at',
       header: 'Created',
-      render: (user: any) => formatTimestamp(user.created_at),
+      render: (user: any) => <span className="text-sm whitespace-nowrap">{formatTimestamp(user.created_at)}</span>,
     },
     {
       key: 'last_login',
       header: 'Last Login',
-      render: (user: any) => user.last_login ? formatTimestamp(user.last_login) : 'Never',
+      render: (user: any) => <span className="text-sm whitespace-nowrap">{user.last_login ? formatTimestamp(user.last_login) : 'Never'}</span>,
     },
     {
       key: 'status',
@@ -84,28 +85,32 @@ export const Users: React.FC = () => {
           {user.is_active ? 'Active' : 'Inactive'}
         </Badge>
       ),
+      width: '100px'
     },
   ];
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
-        <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-bold)' }}>Users</h1>
-        <Button onClick={loadUsers}>Refresh</Button>
+    <div className="max-w-[1440px] mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4">
+        <div>
+          <h1 className="text-2xl md:text-4xl font-black uppercase text-black mb-2 tracking-tighter">Users</h1>
+          <p className="text-lg text-gray-600">Manage system access</p>
+        </div>
+        <Button onClick={loadUsers} variant="primary">Refresh</Button>
       </div>
 
       <Card>
-        <CardContent>
+        <CardContent className="p-0 md:p-0">
           <Table
             columns={columns}
             data={users}
-            loading={loading}
+            isLoading={loading}
             emptyMessage="No users found"
           />
         </CardContent>
       </Card>
 
-      <div style={{ marginTop: 'var(--spacing-lg)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+      <div className="mt-4 text-gray-400 text-sm p-4">
         Total users: {users.length}
       </div>
     </div>
@@ -135,27 +140,27 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-bold)', marginBottom: 'var(--spacing-xl)' }}>Settings</h1>
+    <div className="max-w-[900px] mx-auto">
+      <h1 className="text-2xl md:text-4xl font-black uppercase text-black mb-8 md:mb-12 tracking-tighter">Settings</h1>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
+      <div className="flex flex-col gap-6 md:gap-8">
         {/* Account Information */}
         <Card>
           <CardContent>
-            <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-semibold)', marginBottom: 'var(--spacing-md)' }}>
+            <h2 className="text-xl md:text-2xl font-black uppercase mb-6">
               Account Information
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+            <div className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-xs)' }}>
+                <label className="block text-sm font-bold uppercase text-gray-500 mb-1">
                   Username
                 </label>
-                <div style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-medium)' }}>
+                <div className="text-lg font-bold">
                   {currentUser?.username || '-'}
                 </div>
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-xs)' }}>
+                <label className="block text-sm font-bold uppercase text-gray-500 mb-1">
                   Role
                 </label>
                 <Badge type={
@@ -172,20 +177,20 @@ export const Settings: React.FC = () => {
         {/* System Health */}
         <Card>
           <CardContent>
-            <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-semibold)', marginBottom: 'var(--spacing-md)' }}>
+            <h2 className="text-xl md:text-2xl font-black uppercase mb-6">
               System Health
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Database</span>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                <span className="font-medium">Database</span>
                 <Badge type="success">OK</Badge>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Storage</span>
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                <span className="font-medium">Storage</span>
                 <Badge type="success">OK</Badge>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Authentication</span>
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                <span className="font-medium">Authentication</span>
                 <Badge type="success">OK</Badge>
               </div>
             </div>
@@ -195,21 +200,21 @@ export const Settings: React.FC = () => {
         {/* Application Info */}
         <Card>
           <CardContent>
-            <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-semibold)', marginBottom: 'var(--spacing-md)' }}>
+            <h2 className="text-xl md:text-2xl font-black uppercase mb-6">
               Application Information
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div className="flex flex-col gap-3 text-sm text-gray-500">
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
                 <span>Version</span>
-                <span style={{ fontWeight: 'var(--font-medium)', color: 'var(--text-primary)' }}>1.0.0</span>
+                <span className="font-bold text-black">1.0.0</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
                 <span>Environment</span>
-                <span style={{ fontWeight: 'var(--font-medium)', color: 'var(--text-primary)' }}>Development</span>
+                <span className="font-bold text-black">Development</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div className="flex justify-between items-center pb-2 border-b border-gray-100">
                 <span>Backend API</span>
-                <span style={{ fontWeight: 'var(--font-medium)', color: 'var(--text-primary)' }}>http://localhost:8000</span>
+                <span className="font-bold text-black">http://localhost:8000</span>
               </div>
             </div>
           </CardContent>
