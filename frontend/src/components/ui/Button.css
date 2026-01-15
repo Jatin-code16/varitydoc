@@ -1,0 +1,92 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-weight: 800; /* Extra Bold */
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  letter-spacing: -0.02em;
+}
+
+/* ... existing code ... */
+
+/* Variants */
+.btn-primary {
+  background: var(--primary-500); /* Neo Yellow */
+  color: black;
+  border-color: black;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #FFEA00; /* Brighter yellow */
+  /* Remove transform/shadow here as it is handled by Tailwind classes in .tsx now */
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-alt);
+  border-color: var(--border-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-alt);
+  color: var(--text-primary);
+}
+
+.btn-destructive {
+  background: var(--critical-dark);
+  color: white;
+  border-color: black;
+}
+
+.btn-destructive:hover:not(:disabled) {
+  background: #D50000;
+}
+
+/* Loading State */
+.btn-loading {
+  pointer-events: none;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+}
+
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
+}

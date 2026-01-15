@@ -1,0 +1,81 @@
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.input-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: var(--text-base);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.input:hover {
+  border-color: var(--border-hover);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-50);
+}
+
+.input-error {
+  border-color: var(--critical-text);
+}
+
+.input-error:focus {
+  box-shadow: 0 0 0 3px var(--critical-bg);
+}
+
+.input-with-left-icon {
+  padding-left: 40px;
+}
+
+.input-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+}
+
+.input-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.input-icon-left {
+  left: 12px;
+}
+
+.input-icon-right {
+  right: 12px;
+}
+
+.input-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.input-error-text {
+  font-size: var(--text-sm);
+  color: var(--critical-text);
+}

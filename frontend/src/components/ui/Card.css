@@ -1,0 +1,39 @@
+.card {
+  background: var(--surface);
+  /* borders and shadows handled by tailwind in component */
+  overflow: hidden;
+}
+
+.card-hover {
+  /* handled by tailwind */
+}
+
+.card-hover:hover {
+  /* handled by tailwind */
+}
+
+.card-clickable {
+  cursor: pointer;
+}
+
+.card-header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.card-content {
+  padding: var(--spacing-lg);
+}
+
+.card-footer {
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border);
+  background: var(--surface-alt);
+}

@@ -2,21 +2,22 @@ import { useState } from "react";
 
 const ROLE_INFO = {
   admin: {
-    color: "#ff6b6b",
+    className: "role-admin",
     icon: "👑",
-    description: "Full system access with user management",
+    label: "Admin",
+    description: "Full system access & User Management",
     permissions: [
       "Register documents",
       "Verify documents",
       "View audit logs",
       "Manage users",
-      "Update roles",
       "View all alerts"
     ]
   },
   document_owner: {
-    color: "#4dabf7",
+    className: "role-document_owner",
     icon: "📝",
+    label: "Owner",
     description: "Can register and verify documents",
     permissions: [
       "Register documents",
@@ -25,8 +26,9 @@ const ROLE_INFO = {
     ]
   },
   auditor: {
-    color: "#51cf66",
+    className: "role-auditor",
     icon: "🔍",
+    label: "Auditor",
     description: "Read-only access to audit logs",
     permissions: [
       "View audit logs",
@@ -35,8 +37,9 @@ const ROLE_INFO = {
     ]
   },
   guest: {
-    color: "#868e96",
+    className: "role-guest",
     icon: "👤",
+    label: "Guest",
     description: "Limited read-only access",
     permissions: [
       "Verify documents only"
@@ -56,16 +59,10 @@ function RoleBadge({ role, showTooltip = true }) {
       onMouseEnter={() => showTooltip && setTooltipVisible(true)}
       onMouseLeave={() => setTooltipVisible(false)}
     >
-      <div 
-        className="roleBadge" 
-        style={{ 
-          borderColor: `${info.color}40`,
-          background: `${info.color}20`
-        }}
-      >
+      <div className={`roleBadge ${info.className}`}>
         <span className="roleBadgeIcon">{info.icon}</span>
-        <span className="roleBadgeText" style={{ color: info.color }}>
-          {role || "Guest"}
+        <span className="roleBadgeText">
+          {info.label}
         </span>
       </div>
       
@@ -73,15 +70,17 @@ function RoleBadge({ role, showTooltip = true }) {
         <div className="roleBadgeTooltip">
           <div className="roleBadgeTooltipHeader">
             <span className="roleBadgeTooltipIcon">{info.icon}</span>
-            <span className="roleBadgeTooltipTitle">{role || "Guest"}</span>
+            <span className="roleBadgeTooltipTitle">{info.label} Role</span>
           </div>
-          <p className="roleBadgeTooltipDesc">{info.description}</p>
+          <p className="roleBadgeTooltipDesc" style={{ opacity: 0.8, lineHeight: 1.4 }}>
+            {info.description}
+          </p>
           <div className="roleBadgeTooltipPerms">
-            <strong>Permissions:</strong>
+            <strong style={{ display: 'block', borderBottom: '1px solid currentColor', paddingBottom: '4px' }}>Permissions:</strong>
             <ul>
               {info.permissions.map((perm, idx) => (
                 <li key={idx}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {perm}

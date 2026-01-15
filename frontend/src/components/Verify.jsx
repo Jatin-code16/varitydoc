@@ -212,8 +212,9 @@ function Verify({ onNotify, onAlertCreated }) {
               setIsDragging(false);
             }}
             onDrop={onDrop}
+            onClick={() => document.getElementById(inputId)?.click()}
           >
-            <label className="dropzoneLabel" htmlFor={inputId}>
+            <div className="dropzoneLabel">
               <span className="dropzoneLeft">
                 <span className="dropzoneTitle">
                   {file ? "Selected file" : "Upload to verify"}
@@ -223,7 +224,7 @@ function Verify({ onNotify, onAlertCreated }) {
                 </span>
               </span>
               <span className="chip chipAccent">Browse</span>
-            </label>
+            </div>
             <div className="subtle" style={{ marginTop: "8px" }}>
               {file ? formatSize(file.size) : "Tip: you can also drag & drop a file here."}
             </div>
@@ -279,187 +280,159 @@ function Verify({ onNotify, onAlertCreated }) {
       </form>
 
       {(error || result) && (
-        <div
-          className={result ? "notice noticeStrong" : "notice"}
-          style={{ marginTop: "14px" }}
+        <div 
+          className={`result-card ${(!result && error) || (result && !isAuthentic) ? 'result-error' : 'result-success'}`}
           aria-live="polite"
         >
           {error && (
-            <>
-              <p className="noticeTitle">Request failed</p>
-              <div className="mono">{error}</div>
-            </>
+            <div className="result-header">
+               <div className="result-title">
+                  {error.toLowerCase().includes("not registered") ? (
+                    <>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                      </svg>
+                      Not Registered
+                    </>
+                  ) : (
+                    <>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                      </svg>
+                      Verification Error
+                    </>
+                  )}
+               </div>
+               <span className="result-badge">ERROR</span>
+            </div>
           )}
 
           {result && (
-            <>
-              <p className="noticeTitle">Verification result</p>
+            <div className="result-header">
+               {isAuthentic ? (
+                 <>
+                   <div className="result-title">
+                      <svg className="verified-icon-anim" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      Verified
+                   </div>
+                   <span className="result-badge">VALID MATCH</span>
+                 </>
+               ) : (
+                 <>
+                   <div className="result-title">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                      </svg>
+                      Verification Failed
+                   </div>
+                   <span className="result-badge">TAMPERED</span>
+                 </>
+               )}
+            </div>
+          )}
 
-              <div
-                className={`${
-                  isAuthentic ? "statusBox statusGood" : "statusBox statusBad"
-                } ${animateResult ? "resultPop" : ""} ${!isAuthentic && shakeWarn ? "shake" : ""}`}
-                style={{ marginBottom: "12px" }}
-                role="status"
-              >
-                <div className="statusBoxTitle">
-                  <span>{isAuthentic ? "Verified" : "Verification failed"}</span>
-                  <span className={isAuthentic ? "badge badgeAccent" : "badge"}>
-                    {result.result ?? "—"}
-                  </span>
-                </div>
-                <div className="statusBoxBody">
-                  {isAuthentic
-                    ? "This file matches the stored hash."
-                    : "This file does not match the stored hash (possible tampering or wrong file)."}
-                </div>
-              </div>
+          <div className="result-body">
+             {error && <p className="mono">{error}</p>}
 
-              <div className="statusBox" style={{ marginBottom: "12px" }} aria-label="Hash match">
-                <div className="statusBoxTitle">
-                  <span>Hash match</span>
-                  <span
-                    className={hashesMatch ? "badge" : "badge"}
-                    style={{
-                      borderColor: hashesMatch
-                        ? "color-mix(in oklab, var(--success) 60%, var(--border))"
-                        : "color-mix(in oklab, var(--error) 60%, var(--border))",
-                      background: hashesMatch
-                        ? "color-mix(in oklab, var(--success) 16%, transparent)"
-                        : "color-mix(in oklab, var(--error) 14%, transparent)",
-                    }}
-                  >
-                    {hashesMatch ? "MATCH" : "MISMATCH"}
-                  </span>
-                </div>
-                <div className="statusBoxBody">
-                  {hashesMatch
-                    ? "Stored hash equals uploaded hash."
-                    : "Stored hash differs from uploaded hash."}
-                </div>
-              </div>
+             {result && (
+               <>
+                 <p style={{marginBottom: '1.5rem', fontWeight: 500}}>
+                   {isAuthentic
+                    ? "Document integrity confirmed. Cryptographic hashes match."
+                    : "CRITICAL: Document hash does not match stored record. File may be modified."}
+                 </p>
 
-              <div className="kv">
-                <div className="kvRow">
-                  <div className="kvKey">Filename</div>
-                  <div>{result.filename ?? "—"}</div>
-                </div>
-                <div className="kvRow">
-                  <div className="kvKey">Stored hash</div>
-                  <div className="valueRow">
-                    <div className="mono valueMain">{result.stored_hash ?? "—"}</div>
-                    <span className="tooltip">
-                      <button
-                        className={
-                          copiedKey === "stored"
-                            ? "btn btnSmall copiedFlash"
-                            : "btn btnSmall"
-                        }
-                        type="button"
-                        onClick={() => copyToClipboard("stored", result.stored_hash)}
-                        disabled={!result.stored_hash}
-                        aria-label="Copy stored hash"
-                      >
-                        Copy
-                      </button>
-                      <span
-                        className={
-                          copiedKey === "stored"
-                            ? "tooltipText tooltipShow"
-                            : "tooltipText"
-                        }
-                      >
-                        Copied!
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                <div className="kvRow">
-                  <div className="kvKey">Uploaded hash</div>
-                  <div className="valueRow">
-                    <div className="mono valueMain">{result.uploaded_hash ?? "—"}</div>
-                    <span className="tooltip">
-                      <button
-                        className={
-                          copiedKey === "uploaded"
-                            ? "btn btnSmall copiedFlash"
-                            : "btn btnSmall"
-                        }
-                        type="button"
-                        onClick={() => copyToClipboard("uploaded", result.uploaded_hash)}
-                        disabled={!result.uploaded_hash}
-                        aria-label="Copy uploaded hash"
-                      >
-                        Copy
-                      </button>
-                      <span
-                        className={
-                          copiedKey === "uploaded"
-                            ? "tooltipText tooltipShow"
-                            : "tooltipText"
-                        }
-                      >
-                        Copied!
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Signature Verification Section */}
-                {result.signature_valid !== undefined && (
-                  <>
-                    <div className="kvRow">
-                      <div className="kvKey">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "4px" }}>
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                        Signature Status
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        {result.signature_valid ? (
-                          <>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12"/>
+                 <div className="kv">
+                    <div className="result-row">
+                      <div className="result-label">Filename</div>
+                      <div className="result-value">{result.filename ?? "—"}</div>
+                    </div>
+
+                    <div className="result-row">
+                      <div className="result-label">Stored Hash</div>
+                      <div className="result-value">
+                         <div className="code-block mono">{result.stored_hash ?? "—"}</div>
+                         <button 
+                            className="copy-btn" 
+                            onClick={() => copyToClipboard("stored", result.stored_hash)}
+                            disabled={!result.stored_hash}
+                            title="Copy Stored Hash"
+                         >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
-                            <span style={{ color: "var(--success)" }}>Valid</span>
-                          </>
-                        ) : (
-                          <>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="10"/>
-                              <line x1="15" y1="9" x2="9" y2="15"/>
-                              <line x1="9" y1="9" x2="15" y2="15"/>
-                            </svg>
-                            <span style={{ color: "var(--error)" }}>Invalid</span>
-                          </>
-                        )}
+                         </button>
                       </div>
                     </div>
-                    {result.signature && (
-                      <div className="kvRow">
-                        <div className="kvKey">Signature</div>
-                        <div className="mono" style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>
-                          {result.signature.substring(0, 50)}...
+
+                    <div className="result-row">
+                      <div className="result-label">Uploaded Hash</div>
+                      <div className="result-value">
+                         <div className="code-block mono">{result.uploaded_hash ?? "—"}</div>
+                         <button 
+                            className="copy-btn" 
+                            onClick={() => copyToClipboard("uploaded", result.uploaded_hash)}
+                            disabled={!result.uploaded_hash}
+                            title="Copy Uploaded Hash"
+                         >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                         </button>
+                      </div>
+                    </div>
+
+                    {result.signature_valid !== undefined && (
+                      <>
+                        <div className="result-row">
+                           <div className="result-label">Signature Status</div>
+                           <div className="result-value" style={{ gap: '0.5rem', justifyContent: 'flex-start' }}>
+                              {result.signature_valid ? (
+                                <span style={{display: 'flex', alignItems: 'center', fontWeight: 'bold', color: 'var(--success, green)'}}>
+                                   <svg width="16" height="16" style={{marginRight: '6px'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                      <polyline points="20 6 9 17 4 12"/>
+                                   </svg>
+                                   VALID SIGNATURE
+                                </span>
+                              ) : (
+                                <span style={{display: 'flex', alignItems: 'center', fontWeight: 'bold', color: 'var(--error, red)'}}>
+                                   <svg width="16" height="16" style={{marginRight: '6px'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                      <circle cx="12" cy="12" r="10"></circle>
+                                      <line x1="15" y1="9" x2="9" y2="15"></line>
+                                      <line x1="9" y1="9" x2="15" y2="15"></line>
+                                   </svg>
+                                   INVALID SIGNATURE
+                                </span>
+                              )}
+                           </div>
                         </div>
-                      </div>
+
+                        {result.signature && (
+                          <div className="result-row">
+                             <div className="result-label">Signature</div>
+                             <div className="result-value">
+                                <div className="code-block mono" style={{fontSize: '0.75rem', maxHeight: '60px', overflowY: 'auto'}}>
+                                   {result.signature}
+                                </div>
+                             </div>
+                          </div>
+                        )}
+                      </>
                     )}
-                    {result.signed_by && (
-                      <div className="kvRow">
-                        <div className="kvKey">Signed by</div>
-                        <div>{result.signed_by}</div>
-                      </div>
-                    )}
-                    {result.signature_algorithm && (
-                      <div className="kvRow">
-                        <div className="kvKey">Algorithm</div>
-                        <div>{result.signature_algorithm}</div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </>
-          )}
+                 </div>
+               </>
+             )}
+          </div>
         </div>
       )}
     </section>

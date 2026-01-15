@@ -201,8 +201,9 @@ function Register({ onNotify, onAlertCreated }) {
               setIsDragging(false);
             }}
             onDrop={onDrop}
+            onClick={() => document.getElementById(inputId)?.click()}
           >
-            <label className="dropzoneLabel" htmlFor={inputId}>
+            <div className="dropzoneLabel">
               <span className="dropzoneLeft">
                 <span className="dropzoneTitle">
                   {file ? "Selected file" : "Upload a document"}
@@ -212,7 +213,7 @@ function Register({ onNotify, onAlertCreated }) {
                 </span>
               </span>
               <span className="chip chipAccent">Browse</span>
-            </label>
+            </div>
             <div className="subtle" style={{ marginTop: "8px" }}>
               {file ? formatSize(file.size) : "Tip: you can also drag & drop a file here."}
             </div>
@@ -268,111 +269,101 @@ function Register({ onNotify, onAlertCreated }) {
       </form>
 
       {(error || result) && (
-        <div
-          className={result ? "notice noticeStrong" : "notice"}
-          style={{ marginTop: "14px" }}
+        <div 
+          className={`result-card ${error ? 'result-error' : 'result-success'}`}
           aria-live="polite"
         >
           {error && (
-            <>
-              <p className="noticeTitle">Register result</p>
-              <div className="statusBox statusBad" role="status" style={{ marginBottom: "12px" }}>
-                <div className="statusBoxTitle">
-                  <span>Upload failed</span>
-                  <span className="badge">ERROR</span>
-                </div>
-                <div className="statusBoxBody mono">{error}</div>
+            <div className="result-header">
+              <div className="result-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                   <circle cx="12" cy="12" r="10"></circle>
+                   <line x1="15" y1="9" x2="9" y2="15"></line>
+                   <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Upload Failed
               </div>
-            </>
+              <span className="result-badge">ERROR</span>
+            </div>
           )}
 
           {result && (
-            <>
-              <p className="noticeTitle">Register result</p>
-
-              <div className="statusBox statusGood" role="status" style={{ marginBottom: "12px" }}>
-                <div className="statusBoxTitle">
-                  <span>Registered</span>
-                  <span className="badge badgeAccent">SUCCESS</span>
-                </div>
-                <div className="statusBoxBody">
-                  The hash has been stored for future verification.
-                  {result.signature && (
-                    <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <polyline points="9 12 11 14 15 10"/>
-                      </svg>
-                      <span>Digitally signed with Azure Key Vault</span>
-                    </div>
-                  )}
-                </div>
+            <div className="result-header">
+              <div className="result-title">
+                 <svg className="verified-icon-anim" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                 </svg>
+                 Success
               </div>
-
-              <div className="kv">
-                <div className="kvRow">
-                  <div className="kvKey">Filename</div>
-                  <div>{result.filename ?? "—"}</div>
-                </div>
-                <div className="kvRow">
-                  <div className="kvKey">SHA-256</div>
-                  <div className="valueRow">
-                    <div className="mono valueMain">{result.sha256 ?? "—"}</div>
-                    <span className="tooltip">
-                      <button
-                        className={
-                          copied ? "btn btnSmall copiedFlash" : "btn btnSmall"
-                        }
-                        type="button"
-                        onClick={() => copyToClipboard(result.sha256)}
-                        disabled={!result.sha256}
-                      >
-                        Copy
-                      </button>
-                      <span
-                        className={
-                          copied ? "tooltipText tooltipShow" : "tooltipText"
-                        }
-                      >
-                        Copied!
-                      </span>
-                    </span>
-                  </div>
-                </div>
-                <div className="kvRow">
-                  <div className="kvKey">Status</div>
-                  <div>{result.status ?? "—"}</div>
-                </div>
-                <div className="kvRow">
-                  <div className="kvKey">Storage</div>
-                  <div>{result.storage ?? "—"}</div>
-                </div>
-                {result.signature && (
-                  <>
-                    <div className="kvRow">
-                      <div className="kvKey">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "4px" }}>
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                        Signature
-                      </div>
-                      <div className="mono" style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>
-                        {result.signature.substring(0, 50)}...
-                      </div>
-                    </div>
-                    <div className="kvRow">
-                      <div className="kvKey">Algorithm</div>
-                      <div>{result.signature_algorithm || "RSA-2048"}</div>
-                    </div>
-                    <div className="kvRow">
-                      <div className="kvKey">Signed by</div>
-                      <div>{result.signed_by || "—"}</div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </>
+              <span className="result-badge">REGISTERED</span>
+            </div>
           )}
+
+          <div className="result-body">
+             {error && (
+               <p className="mono" style={{margin: 0}}>{error}</p>
+             )}
+
+             {result && (
+               <>
+                 <p style={{marginBottom: '1.5rem', fontWeight: 500}}>
+                   Document registered successfully. Key Vault signature applied.
+                 </p>
+                 
+                 <div className="kv"> {/* Using existing KV logic but wrapper is new */}
+                    <div className="result-row">
+                      <div className="result-label">Filename</div>
+                      <div className="result-value">{result.filename ?? "—"}</div>
+                    </div>
+                    
+                    <div className="result-row">
+                      <div className="result-label">SHA-256 Hash</div>
+                      <div className="result-value">
+                        <div className="code-block mono">{result.sha256}</div>
+                        <button 
+                          className="copy-btn" 
+                          onClick={() => copyToClipboard(result.sha256)} 
+                          title="Copy Hash"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="result-row">
+                      <div className="result-label">Status</div>
+                      <div className="result-value">{result.status ?? "—"}</div>
+                    </div>
+
+                    {result.signature && (
+                      <>
+                        <div className="result-row">
+                          <div className="result-label">
+                            <svg width="14" height="14" style={{marginRight: '6px'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                              <polyline points="9 12 11 14 15 10"/>
+                            </svg>
+                            Signature
+                          </div>
+                           <div className="result-value">
+                             <div className="code-block mono" style={{fontSize: '0.75rem', maxHeight: '60px', overflowY: 'auto'}}>
+                               {result.signature}
+                             </div>
+                           </div>
+                        </div>
+                        <div className="result-row">
+                          <div className="result-label">Algorithm</div>
+                          <div className="result-value">{result.signature_algorithm || "RSA-2048"}</div>
+                        </div>
+                      </>
+                    )}
+                 </div>
+               </>
+             )}
+          </div>
         </div>
       )}
     </section>

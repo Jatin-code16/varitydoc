@@ -1,5 +1,6 @@
 import uuid
-from datetime import datetime
+import secrets
+from datetime import datetime, timedelta
 from typing import Optional, List
 
 from cosmos_service import database
@@ -110,3 +111,53 @@ def change_user_password(username: str, current_password: str, new_password: str
     users_container.upsert_item(user)
     
     return {"message": "Password changed successfully"}
+
+
+def initiate_password_reset(username: str) -> str:
+    """Generate a reset token and save it to the user record."""
+    user = get_user_by_username(username)
+    if not user:
+        raise ValueError("User not found")
+    
+    # Generate a secure random token
+    token = secrets.token_urlsafe(32)
+    expiry = (datetime.utcnow() + timedelta(minutes=15)).isoformat()
+    
+    user["reset_token"] = token
+    user["reset_token_expiry"] = expiry
+    
+    users_container.upsert_item(user)
+    
+    return token
+
+
+def complete_password_reset(username: str, token: str, new_password: str):
+    """Verify token and update password."""
+    user = get_user_by_username(username)
+    if not user:
+        raise ValueError("User not found")
+        
+    stored_token = user.get("reset_token")
+    stored_expiry = user.get("reset_token_expiry")
+    
+    if not stored_token or not stored_expiry:
+         raise ValueError("Invalid reset request")
+         
+    if stored_token != token:
+        raise ValueError("Invalid reset token")
+        
+    if datetime.utcnow().isoformat() > stored_expiry:
+        raise ValueError("Reset token has expired")
+        
+    # Validation
+    if len(new_password) < 6:
+        raise ValueError("Password must be at least 6 characters")
+        
+    # Update password and clear token
+    user["password_hash"] = hash_password(new_password)
+    user.pop("reset_token", None)
+    user.pop("reset_token_expiry", None)
+    
+    users_container.upsert_item(user)
+    
+    return True

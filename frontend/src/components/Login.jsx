@@ -1,9 +1,11 @@
 import { useState } from "react";
 import api from "../api/client";
 import Signup from "./Signup";
+import ForgotPassword from "./ForgotPassword";
 
 function Login({ onLogin }) {
   const [showSignup, setShowSignup] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -12,6 +14,10 @@ function Login({ onLogin }) {
 
   if (showSignup) {
     return <Signup onBackToLogin={() => setShowSignup(false)} />;
+  }
+
+  if (showForgot) {
+    return <ForgotPassword onBackToLogin={() => setShowForgot(false)} />;
   }
 
   const handleSubmit = async (e) => {
@@ -114,6 +120,24 @@ function Login({ onLogin }) {
                   </svg>
                 )}
               </button>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem'}}>
+                <button 
+                    type="button" 
+                    onClick={() => setShowForgot(true)} 
+                    style={{
+                        background:'none', 
+                        border:'none', 
+                        color:'var(--text-secondary)', 
+                        cursor:'pointer', 
+                        fontSize: '0.85rem',
+                        textDecoration: 'underline',
+                        padding: 0
+                    }}
+                    className="hover:text-white"
+                >
+                    Forgot password?
+                </button>
             </div>
           </div>
 

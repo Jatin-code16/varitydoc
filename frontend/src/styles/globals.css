@@ -1,0 +1,204 @@
+/* Design System Tokens - Neo-Brutalist Theme */
+:root {
+  /* Primary Palette */
+  --primary-50: #F7FEE7;
+  --primary-100: #ECFCCB;
+  --primary-200: #D9F99D;
+  --primary-400: #A3E635; /* Neon Green */
+  --primary-500: #A3E635; /* Primary */
+  --primary-600: #65A30D;
+  --primary-700: #4D7C0F;
+
+  /* Semantic Colors */
+  --background: #f0f0f0; /* Light Gray */
+  --surface: #FFFFFF;
+  --surface-alt: #E5E5E5;
+  --border: #000000;
+  --border-hover: #000000;
+
+  /* Text Hierarchy */
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-tertiary: #444444;
+  --text-on-primary: #000000;
+
+  /* Status Colors */
+  --success-bg: #A3E635; /* Green */
+  --success-text: #000000;
+  --success-dark: #000000;
+
+  --warning-bg: #FEF08A;
+  --warning-text: #000000;
+  --warning-dark: #000000;
+
+  --critical-bg: #FF3E00; /* Electric Orange */
+  --critical-text: #FFFFFF; /* White on Orange */
+  --critical-dark: #992500;
+
+  --info-bg: #BAE6FD;
+  --info-text: #000000;
+  --info-dark: #000000;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Shadows - Hard Shadows */
+  --shadow-sm: 4px 4px 0px 0px #000000;
+  --shadow-md: 8px 8px 0px 0px #000000;
+  --shadow-lg: 12px 12px 0px 0px #000000;
+  --shadow-xl: 16px 16px 0px 0px #000000;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius - Minimal/Sharp */
+  --radius-sm: 0px;
+  --radius-md: 0px; 
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  
+  /* Layout */
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 64px;
+  --topbar-height: 80px;
+  --drawer-width: 400px;
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border-color: #000;
+}
+
+body {
+  font-weight: 700;
+}
+
+html,
+body {
+  height: 100%;
+  overflow-y: auto;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-alt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utility Classes */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-alt) 25%,
+    var(--border) 50%,
+    var(--surface-alt) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+
+.col-span-2 { grid-column: span 2 / span 2; }
+.col-span-3 { grid-column: span 3 / span 3; }
+.col-span-4 { grid-column: span 4 / span 4; }
+.col-span-6 { grid-column: span 6 / span 6; }
+.col-span-8 { grid-column: span 8 / span 8; }
+
+@media (max-width: 1024px) {
+  .grid-cols-12 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .grid-cols-12 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .col-span-2,
+  .col-span-3,
+  .col-span-4,
+  .col-span-6,
+  .col-span-8 {
+    grid-column: span 4 / span 4;
+  }
+}

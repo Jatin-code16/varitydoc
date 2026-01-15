@@ -2,55 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design System Tokens - Neo-Brutalist Theme */
 :root {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.6;
-  font-weight: 400;
-  letter-spacing: -0.011em;
+  /* Primary Palette */
+  --primary-50: #F7FEE7;
+  --primary-100: #ECFCCB;
+  --primary-200: #D9F99D;
+  --primary-400: #A3E635; /* Neon Green */
+  --primary-500: #A3E635; /* Primary */
+  --primary-600: #65A30D;
+  --primary-700: #4D7C0F;
 
-  /* Premium Color System */
-  --accent-primary: #06b6d4; /* cyan - trust & innovation */
-  --accent-secondary: #3b82f6; /* blue - reliability */
-  --accent-tertiary: #8b5cf6; /* purple - premium */
-  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #06b6d4;
+  /* Semantic Colors */
+  --background: #f0f0f0; /* Light Gray */
+  --surface: #FFFFFF;
+  --surface-alt: #E5E5E5;
+  --border: #000000;
+  --border-hover: #000000;
 
-  --bg-primary: #0a0e1a; /* deep dark */
-  --bg-secondary: #0f1419;
-  --bg-tertiary: #141922;
-  --text-primary: rgba(255, 255, 255, 0.95);
-  --text-secondary: rgba(255, 255, 255, 0.75);
-  --text-tertiary: rgba(255, 255, 255, 0.55);
+  /* Text Hierarchy */
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-tertiary: #444444;
+  --text-on-primary: #000000;
 
-  /* Premium Glass Surface */
-  --glass-surface: color-mix(in oklab, #0f1419 85%, transparent);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-glow: rgba(6, 182, 212, 0.08);
-  --softShadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 10px 20px rgba(0, 0, 0, 0.3);
-  --focusRing: 0 0 0 3px rgba(6, 182, 212, 0.3), 0 0 20px rgba(6, 182, 212, 0.2);
+  /* Status Colors */
+  --success-bg: #A3E635; /* Green */
+  --success-text: #000000;
+  --success-dark: #000000;
+
+  --warning-bg: #FEF08A;
+  --warning-text: #000000;
+  --warning-dark: #000000;
+
+  --critical-bg: #FF3E00; /* Electric Orange */
+  --critical-text: #FFFFFF; /* White on Orange */
+  --critical-dark: #992500;
+
+  --info-bg: #BAE6FD;
+  --info-text: #000000;
+  --info-dark: #000000;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
   
-  /* Spacing System */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
 
-  color-scheme: light dark;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
+  /* Shadows - Hard Shadows */
+  --shadow-sm: 4px 4px 0px 0px #000000;
+  --shadow-md: 8px 8px 0px 0px #000000;
+  --shadow-lg: 12px 12px 0px 0px #000000;
+  --shadow-xl: 16px 16px 0px 0px #000000;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'ss01' 1, 'ss02' 1, 'cv05' 1, 'cv08' 1;
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius - Minimal/Sharp */
+  --radius-sm: 0px;
+  --radius-md: 0px; 
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  
+  /* Layout */
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 64px;
+  --topbar-height: 80px;
+  --drawer-width: 400px;
 }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+* {
+  box-sizing: border-box;
+  border-color: #000000;
+}
+
+
+
 
 /* Explicit theme overrides */
 :root[data-theme="dark"] {
@@ -90,50 +135,13 @@ body {
   display: block;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse 1400px 900px at 20% 0%, rgba(6, 182, 212, 0.15), transparent 60%),
-    radial-gradient(ellipse 1200px 800px at 85% 10%, rgba(59, 130, 246, 0.12), transparent 55%),
-    radial-gradient(ellipse 1000px 700px at 50% 100%, rgba(139, 92, 246, 0.08), transparent 50%),
-    linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: var(--background);
   position: relative;
   overflow-x: hidden;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulance type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 999;
-  mix-blend-mode: soft-light;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: 
-    radial-gradient(circle 600px at 20% 30%, rgba(6, 182, 212, 0.03), transparent),
-    radial-gradient(circle 500px at 80% 70%, rgba(139, 92, 246, 0.03), transparent);
-  pointer-events: none;
-  animation: floatingGlow 20s ease-in-out infinite alternate;
-}
-
-@keyframes floatingGlow {
-  0% {
-    opacity: 0.4;
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: translate(30px, -30px) scale(1.1);
-  }
-  100% {
-    opacity: 0.4;
-    transform: translate(0, 0) scale(1);
-  }
-}
 
 h1 {
   font-size: clamp(2rem, 5vw + 1rem, 3.2rem);

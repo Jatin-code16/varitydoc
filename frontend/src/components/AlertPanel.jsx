@@ -190,7 +190,7 @@ function AlertPanel({ isOpen, onClose, onNotify }) {
           </button>
         </div>
 
-        {/* Actions */}
+        {/* Actions - MOVED MARK ALL BUTTON HERE */}
         {unreadCount > 0 && (
           <div className="alertActions">
             <button className="alertActionBtn" onClick={markAllAsRead}>

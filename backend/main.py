@@ -7,7 +7,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
-from user_service import get_user_by_username, create_user, get_all_users, update_user_role, deactivate_user, update_last_login
+from user_service import (
+    get_user_by_username, create_user, get_all_users, update_user_role, 
+    deactivate_user, update_last_login, change_user_password,
+    initiate_password_reset, complete_password_reset
+)
 from auth import verify_password, create_access_token
 from dependencies import get_current_user
 from rbac import (
@@ -65,6 +69,35 @@ UPLOAD_DIR = "uploads"
 @app.on_event("startup")
 def startup_event():
     os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+class PasswordResetRequest(BaseModel):
+    username: str
+
+class PasswordResetConfirm(BaseModel):
+    username: str
+    token: str
+    new_password: str
+
+@app.post("/auth/forgot-password")
+async def forgot_password(request: PasswordResetRequest):
+    try:
+        token = initiate_password_reset(request.username)
+        logger.info(f"RESET TOKEN FOR {request.username}: {token}")
+        return {
+            "message": "Password reset initiated. Check logs for token.",
+            "debug_token": token
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+@app.post("/auth/reset-password")
+async def reset_password_endpoint(request: PasswordResetConfirm):
+    try:
+        complete_password_reset(request.username, request.token, request.new_password)
+        return {"message": "Password reset successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.post("/register")
