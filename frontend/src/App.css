@@ -15,6 +15,17 @@
   box-sizing: border-box;
 }
 
+/* Global Selection Styles */
+::selection {
+  background: var(--accent);
+  color: #000000;
+}
+
+::-moz-selection {
+  background: var(--accent);
+  color: #000000;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -171,7 +182,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.25rem 0.75rem;
-  background: #fff;
+  background: var(--surface);
   border: 2px solid var(--border);
   font-weight: bold;
   font-family: monospace;
@@ -201,7 +212,7 @@ body {
 }
 
 .themeBtn:hover {
-  background: #f4f4f5;
+  background: var(--bg-primary);
 }
 
 .themeBtn:active {
@@ -241,7 +252,7 @@ body {
 .tabButton:hover:not(.tabButtonActive) {
   transform: translate(-2px, -2px);
   box-shadow: var(--shadow-hover);
-  background: #fafafa;
+  background: var(--bg-primary);
 }
 
 .tabButtonActive {
@@ -376,7 +387,8 @@ textarea:focus {
   transform: translate(-1px, -1px);
   box-shadow: 6px 6px 0px 0px var(--border);
   border-color: var(--border);
-  background: #fff;
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
 label {
@@ -542,6 +554,7 @@ label {
 
 .documentRow:hover {
   background: var(--accent);
+  color: #000000;
 }
 
 /* ============================================
@@ -615,7 +628,7 @@ td {
 }
 
 tr:hover td {
-  background: #fdfdfd;
+  background: var(--bg-primary);
 }
 
 /* ============================================
@@ -638,7 +651,7 @@ tr:hover td {
 .modalContent {
   background: var(--surface);
   border: 4px solid var(--border);
-  box-shadow: 16px 16px 0px 0px #000;
+  box-shadow: 16px 16px 0px 0px var(--border);
   padding: 2rem;
   width: 90%;
   max-width: 600px;
@@ -858,7 +871,7 @@ tr:hover td {
   border: 2px solid var(--border);
   padding: 1rem;
   margin-bottom: 1rem;
-  background: #fff;
+  background: var(--surface);
   transition: all 0.2s;
   position: relative;
 }
@@ -909,7 +922,7 @@ tr:hover td {
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
-  background: #fff;
+  background: var(--surface);
   box-shadow: 2px 2px 0px 0px var(--border);
 }
 
@@ -1035,7 +1048,7 @@ tr:hover td {
 }
 
 .alertFilterTab:hover {
-  background: #f4f4f5;
+  background: var(--surface);
 }
 
 .alertFilterTabActive {
@@ -1046,15 +1059,16 @@ tr:hover td {
 /* Actions */
 .alertActions {
   padding: 0.75rem;
-  background: #fcfcfc;
+  background: var(--surface);
   border-bottom: 2px solid var(--border);
   text-align: right;
 }
 
 .alertActionBtn {
-  background: white;
+  background: var(--surface);
   border: 2px solid var(--border);
   padding: 0.4rem 0.8rem;
+  color: var(--text-primary);
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -1080,13 +1094,13 @@ tr:hover td {
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
-  background: #fafafa;
+  background: var(--bg-primary);
 }
 
 .alertEmpty {
   text-align: center;
   padding: 4rem 1rem;
-  color: #888;
+  color: var(--text-tertiary);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1160,7 +1174,7 @@ tr:hover td {
   margin: 0.25rem 0 0.75rem 0;
   font-size: 0.875rem;
   line-height: 1.4;
-  color: #333;
+  color: var(--text-tertiary);
 }
 
 .alertItemMeta {
@@ -1170,7 +1184,7 @@ tr:hover td {
 }
 
 .alertMetaTag {
-  background: #eee;
+  background: var(--bg-primary);
   border: 1px solid var(--border);
   padding: 2px 6px;
   font-size: 0.7rem;
@@ -1195,14 +1209,14 @@ tr:hover td {
 
 .alertActionIconBtn:hover {
   opacity: 1;
-  background: #f0f0f0;
-  border-color: #ddd;
+  background: var(--surface);
+  border-color: var(--border);
 }
 
 .alertActionIconBtnDanger:hover {
   color: var(--error);
-  background: #fff0f0;
-  border-color: #ffd0d0;
+  background: var(--surface);
+  border-color: var(--error);
 }
 
 /* ============================================
@@ -1375,7 +1389,7 @@ tr:hover td {
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
-  background: #f0f0f0;
+  background: var(--surface);
   padding: 0.25rem 0.5rem;
   border: 1px solid var(--border);
 }
@@ -1396,32 +1410,34 @@ tr:hover td {
    ============================================ */
 [data-theme="dark"] {
   --bg-primary: #121212;
-  --text-primary: #ffffff;
+  --text-primary: #e6e6e6;
+  --text-tertiary: #a3a3a3;
   --surface: #1e1e1e;
-  --border: #ffffff;
+  --border: #e6e6e6;
   --accent: #A3E635;
   --accent-secondary: #FF3E00;
   
-  --shadow-hard: 6px 6px 0px 0px #ffffff;
-  --shadow-hover: 10px 10px 0px 0px #ffffff;
-  --shadow-active: 0px 0px 0px 0px #ffffff;
+  --shadow-hard: 6px 6px 0px 0px #e6e6e6;
+  --shadow-hover: 10px 10px 0px 0px #e6e6e6;
+  --shadow-active: 0px 0px 0px 0px #e6e6e6;
 }
 
 [data-theme="dark"] .loginContainer {
-  background-image: radial-gradient(#ffffff 1px, transparent 1px);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
 }
 
 [data-theme="dark"] .table th {
-  background: #ffffff;
-  color: #000000;
+  background: var(--surface);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border);
 }
 
 [data-theme="dark"] .table tr:nth-child(even) {
-  background: #2a2a2a;
+  background: var(--bg-primary);
 }
 
 [data-theme="dark"] .roleBadge {
-  box-shadow: 4px 4px 0px 0px #ffffff;
+  box-shadow: 4px 4px 0px 0px var(--border);
 }
 
 /* ============================================
@@ -1699,13 +1715,13 @@ tr:hover td {
 }
 
 .result-badge {
-  background: white;
-  color: black;
+  background: var(--surface);
+  color: var(--text-primary);
   font-size: 0.75rem;
   font-weight: 900;
   padding: 0.25rem 0.75rem;
-  border: 2px solid black;
-  box-shadow: 2px 2px 0 0 black;
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0 0 var(--border);
   text-transform: uppercase;
 }
 
