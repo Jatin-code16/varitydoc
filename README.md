@@ -296,8 +296,8 @@ KEY_VAULT_URL=https://your-vault.vault.azure.net/
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/docvault.git
-cd docvault
+git clone https://github.com/Jatin-code16/varitydoc.git
+cd varitydoc
 
 # Configure environment variables
 cp backend/.env.example backend/.env
