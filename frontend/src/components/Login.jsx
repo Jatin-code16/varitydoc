@@ -1,12 +1,10 @@
 import { useState } from "react";
 import api from "../api/client";
 import Signup from "./Signup";
-import ForgotPassword from "./ForgotPassword";
 import logoImg from "../assets/logo.png";
 
 function Login({ onLogin, onBackToHome }) {
   const [showSignup, setShowSignup] = useState(false);
-  const [showForgot, setShowForgot] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -15,10 +13,6 @@ function Login({ onLogin, onBackToHome }) {
 
   if (showSignup) {
     return <Signup onBackToLogin={() => setShowSignup(false)} />;
-  }
-
-  if (showForgot) {
-    return <ForgotPassword onBackToLogin={() => setShowForgot(false)} />;
   }
 
   const handleSubmit = async (e) => {
@@ -133,24 +127,6 @@ function Login({ onLogin, onBackToHome }) {
                 )}
               </button>
             </div>
-            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem'}}>
-                <button 
-                    type="button" 
-                    onClick={() => setShowForgot(true)} 
-                    style={{
-                        background:'none', 
-                        border:'none', 
-                        color:'var(--text-secondary)', 
-                        cursor:'pointer', 
-                        fontSize: '0.85rem',
-                        textDecoration: 'underline',
-                        padding: 0
-                    }}
-                    className="hover:text-white"
-                >
-                    Forgot password?
-                </button>
-            </div>
           </div>
 
           {error && (
@@ -194,15 +170,8 @@ function Login({ onLogin, onBackToHome }) {
               try {
                 const res = await api.post("/login/guest");
                 onLogin(res.data);
-              } catch {
-                onLogin({
-                  access_token: "guest_local_token",
-                  token_type: "bearer",
-                  username: "Guest_User",
-                  role: "guest",
-                  permissions: ["can_verify_documents"],
-                  role_description: "Limited read-only access"
-                });
+              } catch (err) {
+                setError(err.response?.data?.detail || "Unable to start guest session.");
               } finally {
                 setLoading(false);
               }

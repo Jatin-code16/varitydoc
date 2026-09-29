@@ -145,10 +145,10 @@ export default function UserProfile({ onNotify, currentUser }) {
       return;
     }
 
-    if (formData.new_password.length < 6) {
+    if (formData.new_password.length < 8) {
       onNotify?.({
         title: "Weak Password",
-        message: "Password must be at least 6 characters in length",
+        message: "Password must be at least 8 characters in length",
         variant: "error"
       });
       return;
@@ -403,7 +403,7 @@ export default function UserProfile({ onNotify, currentUser }) {
                     <span className="rolePill auditorPill">AUDITOR</span>
                   </div>
                   <p className="roleOptionDesc">
-                    Full document ledger inspection, immutable audit log verification, compliance monitoring & tamper alerts.
+                    Full document registry inspection, audit log verification, compliance monitoring & tamper alerts.
                   </p>
                 </div>
               </label>
@@ -601,9 +601,9 @@ export default function UserProfile({ onNotify, currentUser }) {
                     id="new_password"
                     value={formData.new_password}
                     onChange={(e) => setFormData({...formData, new_password: e.target.value})}
-                    placeholder="Minimum 6 characters"
+                    placeholder="Minimum 8 characters"
                     required
-                    minLength={6}
+                    minLength={8}
                     className="passwordInput"
                   />
                   <button
@@ -627,7 +627,7 @@ export default function UserProfile({ onNotify, currentUser }) {
                     onChange={(e) => setFormData({...formData, confirm_password: e.target.value})}
                     placeholder="Repeat new password"
                     required
-                    minLength={6}
+                    minLength={8}
                     className="passwordInput"
                   />
                 </div>

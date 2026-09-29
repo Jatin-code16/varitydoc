@@ -169,7 +169,7 @@ function AuditLogs({ onNotify }) {
         <div className="auditTitleGroup">
           <div className="auditHeaderBadge">
             <History size={15} strokeWidth={2.5} />
-            <span>IMMUTABLE EVENT TRAIL</span>
+            <span>APPEND-ORIENTED AUDIT TRAIL</span>
           </div>
           <h2 className="auditSectionTitle">System Audit & Verification Trail</h2>
           <p className="auditSectionDesc">
@@ -292,7 +292,7 @@ function AuditLogs({ onNotify }) {
           <h3>No Audit Records Found</h3>
           <p>
             {logs.length === 0
-              ? "Run a document registration or verification to create initial immutable audit records."
+              ? "Run a document registration or verification to create initial audit records."
               : "No event records match your search query."}
           </p>
           {(query || resultFilter !== 'all') && (

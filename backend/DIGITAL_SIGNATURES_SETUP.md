@@ -233,8 +233,8 @@ AZURE_KEY_VAULT_URL=https://docvault-keyvault.vault.azure.net/
 ```
 
 ## Security Benefits
-✅ **Non-repudiation:** Uploader cannot deny signing the document  
-✅ **Authenticity:** Proves document came from specific user  
+✅ **Signing Attribution:** Associates document digest with the configured signing key and recording user  
+✅ **Authenticity:** Verifies signature match against the registered document digest  
 ✅ **Integrity:** Any tampering invalidates signature  
 ✅ **Audit Trail:** Complete record of who signed what and when  
 ✅ **Key Rotation:** Keys managed centrally in Key Vault  

@@ -7,6 +7,9 @@ services:
     container_name: docvault-backend
     env_file:
       - ./backend/.env
+    volumes:
+      - ./backend/docvault.db:/app/docvault.db
+      - ./backend/uploads:/app/uploads
     expose:
       - "8000"
     restart: always

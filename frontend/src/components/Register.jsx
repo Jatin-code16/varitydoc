@@ -167,10 +167,10 @@ function Register({ onNotify, onAlertCreated }) {
       <div className="cardHeader" style={{ marginBottom: "2rem" }}>
         <div>
           <span className="liveStatusBadge" style={{ marginBottom: "0.5rem" }}>
-            PHASE 01: IMMUTABLE REGISTRATION
+            PHASE 01: DOCUMENT REGISTRATION
           </span>
           <h2 className="cardTitle" style={{ fontSize: "1.85rem", marginTop: "0.4rem" }}>
-            Register Document in Ledger
+            Register Document in Registry
           </h2>
           <p className="cardSubtitle">
             Upload any file to compute its deterministic SHA-256 cryptographic digest, apply an RSA digital signature, and anchor it into the tamper-evident registry.

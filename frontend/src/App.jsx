@@ -119,7 +119,7 @@ function App() {
       baseTabs.push({
         id: "audit",
         label: "Audit logs",
-        description: "Immutable event trail",
+        description: "Append-oriented audit trail",
         icon: History,
       });
     }
@@ -202,15 +202,8 @@ function App() {
           try {
             const res = await api.post("/login/guest");
             handleLogin(res.data);
-          } catch {
-            handleLogin({
-              access_token: "guest_local_token",
-              token_type: "bearer",
-              username: "Guest_User",
-              role: "guest",
-              permissions: ["can_verify_documents"],
-              role_description: "Limited read-only access"
-            });
+          } catch (err) {
+            alert(err.response?.data?.detail || "Unable to start guest session. Please verify backend connection.");
           }
         }}
         themePref={themePref}

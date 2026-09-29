@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 import os
+import uuid
 import shutil
 from dotenv import load_dotenv
 from blob_service import upload_file_to_blob
@@ -7,10 +8,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
+from pathlib import Path
 from user_service import (
     get_user_by_username, create_user, get_all_users, update_user_role, 
     deactivate_user, update_last_login, change_user_password,
-    initiate_password_reset, complete_password_reset,
     create_role_request, get_user_role_requests, get_all_role_requests, review_role_request
 )
 from auth import verify_password, create_access_token
@@ -79,35 +80,6 @@ def startup_event():
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-class PasswordResetRequest(BaseModel):
-    username: str
-
-class PasswordResetConfirm(BaseModel):
-    username: str
-    token: str
-    new_password: str
-
-@app.post("/auth/forgot-password")
-async def forgot_password(request: PasswordResetRequest):
-    try:
-        token = initiate_password_reset(request.username)
-        logger.info(f"RESET TOKEN FOR {request.username}: {token}")
-        return {
-            "message": "Password reset initiated. Check logs for token.",
-            "debug_token": token
-        }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-
-@app.post("/auth/reset-password")
-async def reset_password_endpoint(request: PasswordResetConfirm):
-    try:
-        complete_password_reset(request.username, request.token, request.new_password)
-        return {"message": "Password reset successfully"}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
 @app.post("/register")
 async def register_document(
     file: UploadFile = File(...),
@@ -123,7 +95,12 @@ async def register_document(
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file uploaded")
 
-    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    # Sanitize filename against directory traversal attacks
+    safe_filename = Path(file.filename).name
+    if not safe_filename or safe_filename in (".", ".."):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
+    file_path = os.path.join(UPLOAD_DIR, safe_filename)
 
     try:
         # Save temporarily to local disk
@@ -139,36 +116,36 @@ async def register_document(
         # Upload to Azure Blob Storage
         upload_file_to_blob(
             local_file_path=file_path,
-            blob_name=file.filename
+            blob_name=safe_filename
         )
 
         # Store metadata with signature
         store_document(
-            file.filename, 
+            safe_filename, 
             file_hash, 
             signature_data=signature_data,
             uploaded_by=current_user["username"]
         )
-        log_audit_event(file.filename, "REGISTER", "SUCCESS")
+        log_audit_event(safe_filename, "REGISTER", "SUCCESS")
 
         logger.info(
             "Document registered",
             extra={
                 "event": "register",
                 "username": current_user["username"],
-                "document_name": file.filename
+                "document_name": safe_filename
             }
         )
         
         # Create success alert
         alert_document_registered(
             username=current_user["username"],
-            filename=file.filename,
+            filename=safe_filename,
             signed_by=current_user["username"]
         )
 
         return {
-            "filename": file.filename,
+            "filename": safe_filename,
             "sha256": file_hash,
             "storage": "AZURE_BLOB",
             "status": "REGISTERED",
@@ -177,11 +154,16 @@ async def register_document(
         }
 
     except Exception as e:
-        log_audit_event(file.filename, "REGISTER", "FAILED")
+        log_audit_event(safe_filename, "REGISTER", "FAILED")
         raise HTTPException(status_code=500, detail=str(e))
 
     finally:
         file.file.close()
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception:
+                pass
 
 
 @app.post("/verify")
@@ -189,10 +171,15 @@ async def verify_document(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file uploaded")
 
+    # Sanitize filename against directory traversal attacks
+    safe_filename = Path(file.filename).name
+    if not safe_filename or safe_filename in (".", ".."):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
+    temp_path = os.path.join(UPLOAD_DIR, f"verify_{safe_filename}")
+
     try:
         # Save uploaded file temporarily
-        temp_path = os.path.join(UPLOAD_DIR, f"verify_{file.filename}")
-
         with open(temp_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
@@ -200,10 +187,10 @@ async def verify_document(file: UploadFile = File(...)):
         uploaded_hash = generate_sha256(temp_path)
 
         # Get stored document metadata including signature
-        doc_metadata = get_document_metadata(file.filename)
+        doc_metadata = get_document_metadata(safe_filename)
 
         if not doc_metadata:
-            log_audit_event(file.filename, "VERIFY", "NOT_FOUND")
+            log_audit_event(safe_filename, "VERIFY", "NOT_FOUND")
             raise HTTPException(status_code=404, detail="Document not registered")
 
         stored_hash = doc_metadata.get("sha256")
@@ -231,7 +218,7 @@ async def verify_document(file: UploadFile = File(...)):
             # 🚨 CRITICAL ALERT: Send tampering notification to document owner
             alert_document_tampered(
                 username=uploaded_by,
-                filename=file.filename,
+                filename=safe_filename,
                 stored_hash=stored_hash,
                 uploaded_hash=uploaded_hash
             )
@@ -242,14 +229,14 @@ async def verify_document(file: UploadFile = File(...)):
             if signature_data:
                 alert_signature_invalid(
                     username=uploaded_by,
-                    filename=file.filename,
+                    filename=safe_filename,
                     signer=signature_data.get("signer", "Unknown")
                 )
 
-        log_audit_event(file.filename, "VERIFY", result)
+        log_audit_event(safe_filename, "VERIFY", result)
 
         response = {
-            "filename": file.filename,
+            "filename": safe_filename,
             "stored_hash": stored_hash,
             "uploaded_hash": uploaded_hash,
             "result": result,
@@ -273,13 +260,17 @@ async def verify_document(file: UploadFile = File(...)):
         raise
 
     except Exception as e:
-        log_audit_event(file.filename, "VERIFY", "FAILED")
+        log_audit_event(safe_filename, "VERIFY", "FAILED")
         raise HTTPException(status_code=500, detail=str(e))
 
     finally:
         file.file.close()
         if os.path.exists(temp_path):
-            os.remove(temp_path)
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
+
 
 
 @app.get("/audit-logs")
@@ -334,6 +325,12 @@ def signup(request: UserCreateRequest):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username already taken. Please choose a different username."
+        )
+
+    if len(request.password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters long."
         )
     
     # Create user with document_owner role (default for self-registration)

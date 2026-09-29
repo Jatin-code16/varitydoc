@@ -231,7 +231,7 @@ function Verify({ onNotify, onAlertCreated }) {
                 {isDragging ? "DROP FILE TO VERIFY" : "DRAG & DROP DOCUMENT TO VERIFY"}
               </h3>
               <p className="cyberDropzoneSubtitle">
-                Select any document to compare its computed SHA-256 fingerprint against the immutable database registry.
+                Select any document to compare its computed SHA-256 fingerprint against the registered document record.
               </p>
               <div className="cyberDropzoneFormats">
                 <ShieldCheck size={14} /> Zero-Knowledge Tamper Detection Engine

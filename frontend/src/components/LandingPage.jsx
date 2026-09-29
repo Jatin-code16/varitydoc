@@ -143,13 +143,13 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
           <div className="landingHeroBadge">
             <span className="heroBadgePulse"></span>
             <ShieldCheck size={14} strokeWidth={2.5} />
-            <span>SHA-256 + RSA/ED25519 CRYPTOGRAPHIC ATTESTATION</span>
+            <span>SHA-256 + RSA-2048 CRYPTOGRAPHIC VERIFICATION</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="landingHeroTitle">
-            The Tamper-Proof Document <br />
-            <span className="heroTitleAccent">Integrity Ledger</span>
+            Cryptographic Document <br />
+            <span className="heroTitleAccent">Integrity & Verification</span>
           </h1>
 
           <p className="landingHeroSubtitle">
@@ -191,11 +191,11 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
             </div>
             <div className="trustItem">
               <CheckCircle2 size={16} className="trustIcon" />
-              <span>Immutable SHA-256 Hash</span>
+              <span>SHA-256 Hash Verification</span>
             </div>
             <div className="trustItem">
               <CheckCircle2 size={16} className="trustIcon" />
-              <span>Sub-15ms Local Verification</span>
+              <span>Fast Client-Side Verification</span>
             </div>
             <div className="trustItem">
               <CheckCircle2 size={16} className="trustIcon" />
@@ -227,7 +227,7 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
                 <div className="termLogHash">
                   SHA-256: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
                 </div>
-                <div className="termLog">[2] QUERYING IMMUTABLE CRYPTOGRAPHIC LEDGER...</div>
+                <div className="termLog">[2] QUERYING DOCUMENT REGISTRY...</div>
                 <div className="termLog">[3] VALIDATING RSA DIGITAL SIGNATURE...</div>
               </div>
 
@@ -341,9 +341,9 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
             <Layers size={14} />
             <span>CORE ARCHITECTURE</span>
           </div>
-          <h2 className="sectionTitle">Engineered for Zero-Trust Security</h2>
+          <h2 className="sectionTitle">Engineered for Cryptographic Document Verification</h2>
           <p className="sectionDesc">
-            DocVault replaces vulnerable paper and opaque databases with transparent cryptographic attestation.
+            DocVault protects document authenticity with client-side hashing and digital signature verification.
           </p>
         </div>
 
@@ -352,7 +352,7 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
             <div className="featureIconWrap featureIconGreen">
               <Fingerprint size={26} />
             </div>
-            <h3 className="featureCardTitle">Mathematical Immutability</h3>
+            <h3 className="featureCardTitle">Cryptographic Integrity</h3>
             <p className="featureCardDesc">
               Files are digested using SHA-256 into a unique 64-character hexadecimal fingerprint. Changing even a single whitespace or punctuation flips the entire hash avalanche.
             </p>
@@ -367,10 +367,10 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
             </div>
             <h3 className="featureCardTitle">Asymmetric Signatures</h3>
             <p className="featureCardDesc">
-              Authors attach non-repudiable digital signatures. Verify not only that the content was unaltered, but unequivocally confirm the exact authority that signed it.
+              Documents are signed using a configured RSA signing key. Verification checks the signature against the document digest and confirms the associated application user.
             </p>
             <div className="featureCardFooter">
-              <code>RSA / Ed25519 Verification</code>
+              <code>RSA-2048 / RS256 Verification</code>
             </div>
           </div>
 
@@ -378,12 +378,12 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
             <div className="featureIconWrap featureIconRed">
               <History size={26} />
             </div>
-            <h3 className="featureCardTitle">Immutable Audit Trail</h3>
+            <h3 className="featureCardTitle">Append-Oriented Audit Trail</h3>
             <p className="featureCardDesc">
-              Every registration, integrity verification, and access claim is recorded into an append-only forensic event log with millisecond UTC timestamps.
+              Every registration, integrity verification, and access event is recorded into an audit log with UTC timestamps for transparent operational tracking.
             </p>
             <div className="featureCardFooter">
-              <code>Tamper-Evident Event Trail</code>
+              <code>Audit Event Logging</code>
             </div>
           </div>
 
@@ -409,9 +409,9 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
             <Terminal size={14} />
             <span>OPERATIONAL WORKFLOW</span>
           </div>
-          <h2 className="sectionTitle">Three Steps to Absolute Verification</h2>
+          <h2 className="sectionTitle">Three Steps to Document Verification</h2>
           <p className="sectionDesc">
-            A frictionless workflow designed for legal teams, auditors, developers, and institutions.
+            A straightforward workflow designed for teams, auditors, developers, and institutions.
           </p>
         </div>
 
@@ -430,9 +430,9 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
 
           <div className="stepCard">
             <div className="stepNumber">02</div>
-            <h4 className="stepTitle">Ledger Registration</h4>
+            <h4 className="stepTitle">Document Registration</h4>
             <p className="stepDesc">
-              The cryptographic fingerprint, registrar identity, and optional digital signature are registered and sealed into the tamper-proof ledger.
+              The cryptographic fingerprint, registrar identity, and digital signature metadata are stored in the document verification registry.
             </p>
           </div>
 
@@ -442,9 +442,9 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
 
           <div className="stepCard">
             <div className="stepNumber">03</div>
-            <h4 className="stepTitle">Instant Attestation</h4>
+            <h4 className="stepTitle">Instant Verification</h4>
             <p className="stepDesc">
-              Any recipient or auditor can drop the file to verify its authenticity in under 15ms. If even 1 bit was altered, DocVault alerts with forensic proof.
+              Any recipient or auditor can drop the file to verify its authenticity. If even 1 bit was altered, DocVault immediately alerts with the hash mismatch.
             </p>
           </div>
         </div>
@@ -455,11 +455,11 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
         <div className="bottomCtaCard">
           <div className="bottomCtaBadge">
             <ShieldCheck size={16} />
-            <span>ENTERPRISE-GRADE REPOSITORY</span>
+            <span>SECURE DOCUMENT REPOSITORY</span>
           </div>
           <h2 className="bottomCtaTitle">Ready to Secure Your Critical Documents?</h2>
           <p className="bottomCtaSubtitle">
-            Start registering and verifying documents with zero-trust cryptographic guarantees.
+            Start registering and verifying documents with cryptographic integrity and digital signatures.
           </p>
 
           <div className="bottomCtaActions">

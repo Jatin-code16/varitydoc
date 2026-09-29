@@ -133,7 +133,7 @@ export default function DocumentBrowser({ onNotify, currentUser, onSelectVerify 
         <div className="docBrowserTitleGroup">
           <div className="docLedgerBadge">
             <Fingerprint size={15} strokeWidth={2.5} />
-            <span>IMMUTABLE CRYPTOGRAPHIC LEDGER</span>
+            <span>DOCUMENT INTEGRITY REGISTRY</span>
           </div>
           <h2 className="docSectionTitle">Registered Document Repository</h2>
           <p className="docSectionDesc">

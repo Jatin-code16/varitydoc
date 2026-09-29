@@ -1,11 +1,18 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
+from dotenv import load_dotenv
 
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-# 🔐 Configuration
-SECRET_KEY = "CHANGE_ME_LATER"  # will move to Azure Key Vault later
+load_dotenv()
+
+# 🔐 Security Configuration
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("JWT_SECRET_KEY is not configured. Set JWT_SECRET_KEY in your environment or .env file.")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 

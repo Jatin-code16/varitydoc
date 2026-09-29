@@ -237,7 +237,7 @@ export default function AdminDashboard({ onNotify }) {
             <span className="adminStatTitle">Forensic Audit Entries</span>
           </div>
           <div className="adminStatFooter">
-            <span className="statSubPulse">Immutable Event Log</span>
+            <span className="statSubPulse">Append-Oriented Audit Log</span>
           </div>
         </div>
       </div>

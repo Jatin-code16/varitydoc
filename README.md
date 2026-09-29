@@ -45,7 +45,7 @@ DocVault strictly separates distinct security concerns across four modular techn
         ↓
   Detects whether document content changed (Content Integrity)
 
-  Digital Signatures (RSA / Ed25519)
+  Digital Signatures (RSA-2048 / RS256)
         ↓
   Helps verify the document/signing identity (Identity Authenticity)
 
@@ -73,7 +73,7 @@ DocVault strictly separates distinct security concerns across four modular techn
 | Capability | Technical Mechanism | Technical Function |
 |---|---|---|
 | **Content Integrity Checks** | SHA-256 cryptographic hashing | Computes a deterministic digest to detect single-bit modifications in document files. |
-| **Identity Verification** | RSA-2048 / Ed25519 digital signatures | Signs the document digest with an identity key to establish signing attribution. |
+| **Identity Verification** | RSA-2048 digital signatures | Signs the document digest using a configured RSA signing key and records the associated application user. |
 | **Role-Based Access Control** | 4-tier model (`Admin`, `Document Owner`, `Auditor`, `Guest`) | Enforces the Principle of Least Privilege across all API endpoints. |
 | **Role Clearance Pipeline** | Justification-based request & review workflow | Provides structured privilege elevation reviewed and authorized by administrators. |
 | **Dual Persistence Engine** | Supabase (PostgreSQL) + Azure Blob Storage + SQLite fallback | Primary cloud persistence with local SQLite fallback for development and offline operation. |
@@ -98,7 +98,7 @@ graph TD
 
     subgraph Security & Verification Engine
     API --> HashService[SHA-256 Cryptographic Hasher]
-    API --> SigService[Digital Signature RSA/Ed25519 Engine]
+    API --> SigService[Digital Signature RSA-2048 Engine]
     API --> AlertEngine[Security Telemetry & Event Alerts]
     end
 
@@ -167,25 +167,23 @@ DocVault enforces endpoint-level authorization using fine-grained permissions em
 
 ---
 
-## 🔐 System Access & Credentials
+## 🔐 System Access & Security Configuration
 
-### Production & Deployment Configuration
-In production environments, administrator credentials must be configured securely via environment variables:
+Administrator credentials and security secrets are configured securely via environment variables:
 
 ```env
-ADMIN_USERNAME=<configured during deployment>
-ADMIN_PASSWORD=<configured securely via environment variable>
+# Required Authentication & Security Variables
+JWT_SECRET_KEY=<long-random-cryptographic-secret>
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=<strong-random-password>
+ADMIN_EMAIL=admin@docvault.local
 ```
 
-### Evaluation & Development Environment
-For local evaluation and demonstration testing, a local development fixture is pre-seeded into the development database:
-
-| Account | Username | Password (Evaluation Only) | Role | Primary Scope |
-|---|---|---|---|---|
-| **Evaluation Admin** | `admin` | *(Default local demo fixture: `adminpassword123`)* | **Administrator** | User administration, clearance review, audit log inspection |
-| **Guest Sandbox** | *(None)* | *(No password)* | **Guest** | Unauthenticated sandbox to test document verification and inspect ledger claims |
-
-> **Security Notice:** The evaluation password above is intended strictly for local development and demonstration testing. Production deployments should configure unique credentials via environment variables and rotate them regularly.
+| Access Mode | Entry Point | Credentials | Permissions / Clearance |
+|---|---|---|---|
+| **System Administrator** | `/login` | Set via `ADMIN_USERNAME` / `ADMIN_PASSWORD` in `.env` | Full user administration, role requests review, system audit log inspection |
+| **Document Owner** | `/signup` / `/login` | User-registered (minimum 8-character password) | Document registration, verification, personal document management |
+| **Guest Sandbox** | `Instant Guest Mode` | None (Session initiated via `/login/guest`) | Document verification and public tamper inspection |
 
 ---
 
@@ -248,6 +246,12 @@ npm run dev
 Backend configuration is loaded via `backend/.env`:
 
 ```env
+# JWT & Administrator Security Configuration
+JWT_SECRET_KEY="your-random-32-byte-hex-or-base64-secret"
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD="YourStrongPasswordHere"
+ADMIN_EMAIL="admin@docvault.local"
+
 # Azure Blob Storage (Optional for local testing; defaults to local disk if omitted)
 AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"
 

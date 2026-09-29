@@ -72,6 +72,9 @@ def create_user(username: str, password: str, role: str = "document_owner", emai
     if not validate_role(role):
         raise ValueError(f"Invalid role: {role}. Valid roles: {[r.value for r in UserRole]}")
     
+    if len(password) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    
     user_id = str(uuid.uuid4())
     created_at = datetime.utcnow().isoformat()
     pwd_hash = hash_password(password)
@@ -190,17 +193,22 @@ def get_user_by_username(username: str) -> Optional[dict]:
 
 
 def seed_default_admin():
-    """Ensure default admin user exists"""
+    """Ensure administrator account configured via environment exists"""
     try:
-        existing = get_user_by_username("admin")
-        if not existing:
-            create_user(
-                username="admin",
-                password="adminpassword123",
-                role="admin",
-                email="admin@docvault.local"
-            )
-            logger.info("Created default admin user (admin / adminpassword123)")
+        admin_username = os.getenv("ADMIN_USERNAME")
+        admin_password = os.getenv("ADMIN_PASSWORD")
+        admin_email = os.getenv("ADMIN_EMAIL", f"{admin_username}@docvault.local" if admin_username else "admin@docvault.local")
+        
+        if admin_username and admin_password:
+            existing = get_user_by_username(admin_username)
+            if not existing:
+                create_user(
+                    username=admin_username,
+                    password=admin_password,
+                    role="admin",
+                    email=admin_email
+                )
+                logger.info(f"Initialized administrative account: {admin_username}")
     except Exception as e:
         logger.warning(f"Could not seed admin user: {e}")
 
@@ -208,6 +216,7 @@ try:
     seed_default_admin()
 except Exception:
     pass
+
 
 
 def get_all_users() -> List[dict]:
@@ -317,8 +326,8 @@ def change_user_password(username: str, current_password: str, new_password: str
     if not verify_password(current_password, user["password_hash"]):
         raise ValueError("Current password is incorrect")
     
-    if len(new_password) < 6:
-        raise ValueError("New password must be at least 6 characters")
+    if len(new_password) < 8:
+        raise ValueError("New password must be at least 8 characters")
     
     new_hash = hash_password(new_password)
 
@@ -334,73 +343,6 @@ def change_user_password(username: str, current_password: str, new_password: str
     conn.commit()
     conn.close()
     return {"message": "Password changed successfully"}
-
-
-def initiate_password_reset(username: str) -> str:
-    """Generate a reset token and save it to the user record."""
-    user = get_user_by_username(username)
-    if not user:
-        raise ValueError("User not found")
-    
-    token = secrets.token_urlsafe(32)
-    expiry = (datetime.utcnow() + timedelta(minutes=15)).isoformat()
-
-    if supabase_client:
-        try:
-            supabase_client.table("users").update({
-                "reset_token": token,
-                "reset_token_expiry": expiry
-            }).eq("username", username).execute()
-        except Exception as e:
-            logger.warning(f"Supabase initiate_password_reset error: {e}")
-
-    conn = sqlite3.connect(SQLITE_DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE username = ?", (token, expiry, username))
-    conn.commit()
-    conn.close()
-    return token
-
-
-def complete_password_reset(username: str, token: str, new_password: str):
-    """Verify token and update password."""
-    user = get_user_by_username(username)
-    if not user:
-        raise ValueError("User not found")
-        
-    stored_token = user.get("reset_token")
-    stored_expiry = user.get("reset_token_expiry")
-    
-    if not stored_token or not stored_expiry:
-         raise ValueError("Invalid reset request")
-         
-    if stored_token != token:
-        raise ValueError("Invalid reset token")
-        
-    if datetime.utcnow().isoformat() > stored_expiry:
-        raise ValueError("Reset token has expired")
-        
-    if len(new_password) < 6:
-        raise ValueError("Password must be at least 6 characters")
-        
-    new_hash = hash_password(new_password)
-
-    if supabase_client:
-        try:
-            supabase_client.table("users").update({
-                "password_hash": new_hash,
-                "reset_token": None,
-                "reset_token_expiry": None
-            }).eq("username", username).execute()
-        except Exception as e:
-            logger.warning(f"Supabase complete_password_reset error: {e}")
-
-    conn = sqlite3.connect(SQLITE_DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL WHERE username = ?", (new_hash, username))
-    conn.commit()
-    conn.close()
-    return True
 
 
 def create_role_request(username: str, current_role: str, requested_role: str, reason: str = "") -> dict:

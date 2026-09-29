@@ -34,8 +34,8 @@ function Signup({ onBackToLogin }) {
       return false;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long");
       return false;
     }
 
@@ -174,11 +174,11 @@ function Signup({ onBackToLogin }) {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 className="loginInput"
-                placeholder="Create a password (min 6 characters)"
+                placeholder="Create a password (min 8 characters)"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                minLength={6}
+                minLength={8}
                 autoComplete="new-password"
               />
               <button
@@ -221,7 +221,7 @@ function Signup({ onBackToLogin }) {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                minLength={6}
+                minLength={8}
                 autoComplete="new-password"
               />
               <button
