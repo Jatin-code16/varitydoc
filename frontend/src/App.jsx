@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import LandingPage from "./components/LandingPage";
 import Verify from "./components/Verify";
 import AuditLogs from "./components/AuditLogs";
 import AlertPanel from "./components/AlertPanel";
@@ -67,6 +68,7 @@ function App() {
   });
 
   const [activeTab, setActiveTab] = useState("register");
+  const [unauthView, setUnauthView] = useState("landing");
   const [toast, setToast] = useState(null);
   const [alertPanelOpen, setAlertPanelOpen] = useState(false);
   const [unreadAlerts, setUnreadAlerts] = useState(0);
@@ -172,6 +174,7 @@ function App() {
     setAuth(null);
     localStorage.removeItem("docvault.auth");
     setActiveTab("register");
+    setUnauthView("landing");
   };
 
   const refreshUnreadAlerts = () => {
@@ -184,7 +187,36 @@ function App() {
   // 3️⃣ NOW IT IS SAFE TO RETURN CONDITIONALLY
 
   if (!auth) {
-    return <Login onLogin={handleLogin} />;
+    if (unauthView === "login") {
+      return (
+        <Login 
+          onLogin={handleLogin} 
+          onBackToHome={() => setUnauthView("landing")} 
+        />
+      );
+    }
+    return (
+      <LandingPage
+        onLaunchLogin={() => setUnauthView("login")}
+        onLaunchGuest={async () => {
+          try {
+            const res = await api.post("/login/guest");
+            handleLogin(res.data);
+          } catch {
+            handleLogin({
+              access_token: "guest_local_token",
+              token_type: "bearer",
+              username: "Guest_User",
+              role: "guest",
+              permissions: ["can_verify_documents"],
+              role_description: "Limited read-only access"
+            });
+          }
+        }}
+        themePref={themePref}
+        setThemePref={setThemePref}
+      />
+    );
   }
 
   /* ---------- UI ---------- */

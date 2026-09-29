@@ -4,7 +4,7 @@ import Signup from "./Signup";
 import ForgotPassword from "./ForgotPassword";
 import logoImg from "../assets/logo.png";
 
-function Login({ onLogin }) {
+function Login({ onLogin, onBackToHome }) {
   const [showSignup, setShowSignup] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [username, setUsername] = useState("");
@@ -48,6 +48,21 @@ function Login({ onLogin }) {
         <div className="loginBgDecor loginBgDecor1"></div>
         <div className="loginBgDecor loginBgDecor2"></div>
         <div className="loginBgDecor loginBgDecor3"></div>
+
+        {onBackToHome && (
+          <button 
+            type="button" 
+            className="loginBackHomeBtn" 
+            onClick={onBackToHome}
+            title="Return to Home Overview"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to Overview</span>
+          </button>
+        )}
 
         {/* Header */}
         <div className="loginHeader">

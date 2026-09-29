@@ -42,6 +42,19 @@ def init_user_db():
             reset_token_expiry TEXT
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS role_requests (
+            id TEXT PRIMARY KEY,
+            username TEXT NOT NULL,
+            current_role TEXT NOT NULL,
+            requested_role TEXT NOT NULL,
+            reason TEXT,
+            status TEXT NOT NULL DEFAULT 'pending',
+            created_at TEXT NOT NULL,
+            reviewed_at TEXT,
+            reviewed_by TEXT
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -350,3 +363,134 @@ def complete_password_reset(username: str, token: str, new_password: str):
     conn.commit()
     conn.close()
     return True
+
+
+def create_role_request(username: str, current_role: str, requested_role: str, reason: str = "") -> dict:
+    if not validate_role(requested_role):
+        raise ValueError(f"Invalid role requested: {requested_role}")
+    
+    if current_role == requested_role:
+        raise ValueError("You already possess this role.")
+
+    req_id = f"req_{uuid.uuid4().hex[:8]}"
+    now = datetime.utcnow().isoformat()
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO role_requests (id, username, current_role, requested_role, reason, status, created_at)
+        VALUES (?, ?, ?, ?, ?, 'pending', ?)
+    """, (req_id, username, current_role, requested_role, reason, now))
+    conn.commit()
+    conn.close()
+
+    return {
+        "id": req_id,
+        "username": username,
+        "current_role": current_role,
+        "requested_role": requested_role,
+        "reason": reason,
+        "status": "pending",
+        "created_at": now
+    }
+
+
+def get_user_role_requests(username: str) -> list:
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, username, current_role, requested_role, reason, status, created_at, reviewed_at, reviewed_by
+        FROM role_requests
+        WHERE username = ?
+        ORDER BY created_at DESC
+    """, (username,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "id": r[0],
+            "username": r[1],
+            "current_role": r[2],
+            "requested_role": r[3],
+            "reason": r[4],
+            "status": r[5],
+            "created_at": r[6],
+            "reviewed_at": r[7],
+            "reviewed_by": r[8]
+        }
+        for r in rows
+    ]
+
+
+def get_all_role_requests(status_filter: str = None) -> list:
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    if status_filter and status_filter != "all":
+        cursor.execute("""
+            SELECT id, username, current_role, requested_role, reason, status, created_at, reviewed_at, reviewed_by
+            FROM role_requests
+            WHERE status = ?
+            ORDER BY created_at DESC
+        """, (status_filter,))
+    else:
+        cursor.execute("""
+            SELECT id, username, current_role, requested_role, reason, status, created_at, reviewed_at, reviewed_by
+            FROM role_requests
+            ORDER BY created_at DESC
+        """)
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "id": r[0],
+            "username": r[1],
+            "current_role": r[2],
+            "requested_role": r[3],
+            "reason": r[4],
+            "status": r[5],
+            "created_at": r[6],
+            "reviewed_at": r[7],
+            "reviewed_by": r[8]
+        }
+        for r in rows
+    ]
+
+
+def review_role_request(request_id: str, new_status: str, admin_username: str) -> dict:
+    if new_status not in ["approved", "rejected"]:
+        raise ValueError("Status must be approved or rejected")
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, requested_role FROM role_requests WHERE id = ?", (request_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise ValueError("Role request not found")
+
+    username = row[1]
+    requested_role = row[2]
+    now = datetime.utcnow().isoformat()
+
+    cursor.execute("""
+        UPDATE role_requests
+        SET status = ?, reviewed_at = ?, reviewed_by = ?
+        WHERE id = ?
+    """, (new_status, now, admin_username, request_id))
+    conn.commit()
+    conn.close()
+
+    if new_status == "approved":
+        update_user_role(username, requested_role)
+
+    return {
+        "id": request_id,
+        "username": username,
+        "requested_role": requested_role,
+        "status": new_status,
+        "reviewed_at": now,
+        "reviewed_by": admin_username
+    }
+
