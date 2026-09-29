@@ -5,15 +5,15 @@
 **A cloud-native document integrity verification system with cryptographic signatures, RBAC, and real-time security alerts**
 
 [![React](https://img.shields.io/badge/React-19-black?style=for-the-badge&logo=react)](https://react.dev)
-[![Tailwind](https://img.shields.io/badge/Tailwind-CSS-38bdf8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)](https://www.python.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
 [![Azure](https://img.shields.io/badge/Azure-Cloud-0078d4?style=for-the-badge&logo=microsoftazure)](https://azure.microsoft.com)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![Security](https://img.shields.io/badge/Security-Enterprise-red?style=for-the-badge&logo=security)](https://github.com)
 
-### [🚀 Live Demo](http://51.120.24.245/) • [💻 Source Code](https://github.com/Jatin-code16/varitydoc.git)
+### [💻 Source Code](https://github.com/Jatin-code16/varitydoc.git) • [📡 API Documentation](#-api-documentation) • [🚦 Quick Start](#-quick-start)
 
-[Features](#-features) • [Design System](#-neo-brutalist-design) • [Architecture](#%EF%B8%8F-architecture) • [Quick Start](#-quick-start) • [API Docs](#-api-documentation) • [Deployment](#-deployment)
+[Overview](#-overview) • [Key Capabilities](#-key-capabilities) • [Architecture](#%EF%B8%8F-architecture) • [Security & Defense](#-security-principles--interview-defense) • [Quick Start](#-quick-start) • [API Docs](#-api-documentation)
 
 </div>
 
@@ -21,77 +21,22 @@
 
 ## 📌 Overview
 
-**DocVault** is an enterprise-grade document verification and security system that combines SHA-256 cryptographic hashing with **Azure Key Vault digital signatures**, **role-based access control (RBAC)**, and **real-time security alerts**. It provides a complete solution for registering documents with cryptographic proof, verifying their authenticity, maintaining comprehensive audit trails, and alerting on security events—all deployed on Azure with fully automated CI/CD pipelines.
+**DocVault** is an enterprise-grade document verification and security platform. It guarantees document authenticity and non-repudiation by combining **SHA-256 cryptographic hashing** with **digital signatures**, a **4-tier role-based access control (RBAC)** model, and **real-time security alerts**.
 
-### 🎯 Key Capabilities
-
-- **🔐 Digital Signatures**: RSA-2048 cryptographic signing with Azure Key Vault for non-repudiation
-- **👥 Role-Based Access Control**: 4-tier RBAC system (Admin, Document Owner, Auditor, Guest)
-- **🚨 Real-Time Security Alerts**: Instant notifications for tampering, invalid signatures, and security events
-- **🛡️ Tamper Detection**: SHA-256 hash-based verification combined with signature validation
-- **☁️ Cloud Storage**: Azure Blob Storage integration for scalable document management
-- **📊 Audit Trail**: Complete verification history with digital signature records in Azure Cosmos DB
-- **🎨 Modern Frontend**: React SPA with Neo-Brutalist UI, real-time alerts, and role badges
-- **⚡ Production Architecture**: NGINX reverse proxy with containerized microservices
-- **🔄 Zero-Downtime Deployment**: Automated CI/CD with Docker Hub and Azure VM
+The platform is designed following enterprise software patterns: a high-contrast Neo-Brutalist frontend built with React, a high-performance FastAPI backend, specialized object storage for binaries, structured relational audit storage via Supabase PostgreSQL / Azure Cosmos DB, and an **offline-resilient adapter engine** ensuring high availability and zero downtime.
 
 ---
 
-## 🎨 Neo-Brutalist Design
+## 🎯 Key Capabilities
 
-Rebuilt with a **Neo-Brutalist** aesthetic, the current version emphasizes high contrast, bold typography, and a "function-over-form" philosophy—while remaining fully responsive across mobile and desktop devices.
-
-- **🔳 High Contrast**: Thick, black borders (`border-4` on desktop, `border-2` on mobile) define every component.
-- **📱 Mobile-First**: Tables transform into **"Stacked Cards"** on smaller screens to preserve data readability without horizontal scrolling.
-- **⚡ Hard Shadows**: Distinctive `box-shadow` offsets (4px/8px) create a tactile, "pop-out" effect.
-- **🔠 Typography**: Heavy use of bold, uppercase headers for clear hierarchy.
-
----
-
-## 🚀 Features
-
-### 🔒 Enterprise Security Features
-
-#### Digital Signatures (Azure Key Vault)
-- ✅ **RSA-2048 Cryptographic Signing**: Each document is digitally signed upon registration
-- ✅ **Azure Key Vault Integration**: Secure key management with Hardware Security Module (HSM) backing
-- ✅ **Signature Verification**: Automatic validation on document verification
-- ✅ **Non-Repudiation**: Cryptographic proof of document origin and integrity
-- ✅ **Fallback Mode**: Testing support without Key Vault for development
-
-#### Role-Based Access Control (RBAC)
-- 👑 **Admin Role**: Full system access, user management, role assignment, all audit logs
-- 📄 **Document Owner**: Register and verify documents, view own alerts
-- 🔍 **Auditor**: Read-only audit log access, verify documents, view all alerts
-- 👤 **Guest**: Limited verification-only access
-- ✅ **Permission Matrix**: 10+ granular permissions per role
-- ✅ **API-Level Enforcement**: Every endpoint protected with permission checks
-
-#### Real-Time Alert System
-- 🚨 **Tampering Detection Alerts**: Critical alerts when hash mismatch detected
-- ⚠️ **Signature Validation Alerts**: Warnings for invalid or missing signatures
-- 📢 **Success Notifications**: Info alerts for successful registrations
-- 🔔 **In-App Notifications**: Real-time alert panel with unread count badge
-- 📧 **Email/SMS Ready**: Placeholders for Azure Communication Services integration
-- 🎯 **Severity Levels**: INFO, WARNING, CRITICAL with color-coded UI
-
-### Core Functionality
-- ✅ **Document Registration**: Upload and hash documents with automatic cryptographic signing
-- ✅ **Integrity Verification**: Compare uploaded documents against registered hashes + signatures
-- ✅ **Audit Logging**: Track all verification attempts with timestamps, results, and signatures
-- ✅ **User Management**: Admin endpoints for role assignment and user deactivation
-- ✅ **RESTful API**: FastAPI backend with automatic OpenAPI documentation
-
-### Technical Features
-- 🔐 **Cryptographic Security**: SHA-256 hashing + RSA-2048 digital signatures
-- 🔑 **Azure Key Vault**: Hardware-backed key management and signature operations
-- 👥 **RBAC System**: 4 roles with granular permission checks on all endpoints
-- 🚨 **Alert Engine**: Multi-severity notification system with in-memory storage
-- ☁️ **Azure Integration**: Blob Storage + Cosmos DB + Key Vault
-- 🐳 **Containerized**: Multi-stage Docker builds for optimized images
-- 🔄 **CI/CD Pipeline**: GitHub Actions with automated testing and deployment
-- 🌐 **Reverse Proxy**: NGINX configuration for `/api` routing
-- 📱 **Responsive**: Mobile-optimized with adaptive layouts
+- **🔐 Cryptographic Signatures**: RSA-2048 signing backed by Azure Key Vault (with local cryptographic fallback for non-repudiation).
+- **🛡️ Real-Time Tamper Detection**: Instant hash comparison detects single-bit file modifications and triggers security alerts.
+- **👥 Role-Based Access Control (RBAC)**: 4-tier permission model (Admin, Document Owner, Auditor, Guest) enforced via JWT claims.
+- **🚨 Security Alert System**: Real-time notifications for tampering, signature anomalies, and unauthorized access attempts.
+- **☁️ Hybrid Cloud Storage**: Specialized binary storage via Azure Blob Storage paired with relational metadata in Supabase PostgreSQL / Azure Cosmos DB.
+- **📊 Immutable Audit Trail**: Full historical logging of all document registrations, verification attempts, and security events.
+- **🎨 Neo-Brutalist UI**: Modern high-contrast interface optimized for document auditing and data density across mobile and desktop.
+- **⚡ Resilient Architecture**: Automatic local database fallback (SQLite) prevents crashes and enables zero-cost offline development.
 
 ---
 
@@ -101,371 +46,229 @@ Rebuilt with a **Neo-Brutalist** aesthetic, the current version emphasizes high 
 
 ```mermaid
 graph TD
-    User[Client / Browser] -->|HTTPS| NGINX[NGINX Gateway]
-    NGINX -->|/api| API[FastAPI Backend]
-    NGINX -->|/*| UI[React Frontend]
-    
-    API -->|Auth| KV[Azure Key Vault]
-    API -->|Docs| Blob[Azure Blob Storage]
-    API -->|Logs| Cosmos[Azure Cosmos DB]
+    User[Client / Browser] -->|HTTP / JSON| UI[React Frontend SPA]
+    UI -->|/api REST| API[FastAPI Backend]
     
     subgraph Security Layer
-    API --> HMAC[SHA-256 Hashing]
-    API --> Sign[RSA-2048 Signing]
-    API --> RBAC[RBAC Engine]
+    API --> HMAC[SHA-256 Cryptographic Hashing]
+    API --> Sign[Digital Signatures RSA-2048]
+    API --> RBAC[RBAC JWT Middleware]
+    API --> Alerts[Real-Time Alert Engine]
     end
     
-    UI -- Responsiveness --> Mobile[Mobile View: Stacked Cards]
-    UI -- Responsiveness --> Desktop[Desktop View: Data Tables]
+    subgraph Storage & Data Layer
+    API --> Blob[Azure Blob Storage / Object Store]
+    API --> DB[(Supabase PostgreSQL / Cloud DB)]
+    API -.->|Offline Fallback| LocalDB[(Local Resilient SQLite)]
+    end
 ```
 
 ### Technology Stack
 
-#### Backend
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| API Framework | **FastAPI** | High-performance Python web framework |
-| Document Storage | **Azure Blob Storage** | Cloud-native binary storage |
-| Metadata Storage | **Azure Cosmos DB** | NoSQL database for hashes and logs |
-| Hashing | **SHA-256** | Cryptographic integrity verification |
-| Digital Signatures | **Azure Key Vault** | RSA-2048 signing with HSM backing |
-| Authentication | **JWT Tokens** | Stateless user authentication |
-| RBAC Engine | **Custom Python** | Role-based permission enforcement |
-| Alert System | **In-Memory Store** | Real-time notification management |
-| Server | **Uvicorn** | ASGI server for production |
-
-#### Frontend
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Framework | **React 19** | Modern UI library |
-| Build Tool | **Vite** | Fast development and optimized builds |
-| Styling | **Tailwind CSS** | Utility-first Neo-Brutalist design |
-| HTTP Client | **Axios** | Promise-based API communication |
-| State Management | **React Hooks** | Component state and effects |
-| Components | **Lucide React** | Premium iconography |
-| Web Server | **NGINX** | Static file serving + reverse proxy |
-
-#### DevOps
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Containerization | **Docker** | Consistent deployment environments |
-| Orchestration | **Docker Compose** | Multi-container management |
-| CI/CD | **GitHub Actions** | Automated build and deployment |
-| Registry | **Docker Hub** | Container image repository |
-| Cloud Platform | **Azure VM** | Production hosting environment |
-
----
-
-## 📂 Project Structure
-
-```
-docvault/
-├── .github/
-│   └── workflows/
-│       ├── docker-build.yml      # CI: Build & push Docker images
-│       └── deploy.yml            # CD: Deploy to Azure VM
-│
-├── backend/
-│   ├── main.py                   # FastAPI application + RBAC endpoints
-│   ├── hash_service.py           # SHA-256 hashing implementation
-│   ├── blob_service.py           # Azure Blob Storage operations
-│   ├── cosmos_service.py         # Cosmos DB CRUD + signature metadata
-│   ├── user_service.py           # User management + role assignment
-│   ├── signature_service.py      # Azure Key Vault digital signatures
-│   ├── rbac.py                   # Role-based access control system
-│   ├── alert_service.py          # Real-time alert management
-│   ├── auth.py                   # JWT authentication
-│   ├── dependencies.py           # FastAPI dependencies
-│   ├── requirements.txt          # Python dependencies
-│   ├── Dockerfile                # Backend container definition
-│   ├── ...                       # Setup guides (DIGITAL_SIGNATURES_SETUP.md, RBAC_SETUP.md)
-│   └── uploads/                  # Temporary file storage
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── ui/               # Core UI Components (Card, Button, Badge)
-│   │   │   ├── layout/           # AppShell, Navbar
-│   │   │   └── ...               # Functional components
-│   │   ├── pages/
-│   │   │   ├── Dashboard.tsx     # Main dashboard
-│   │   │   ├── AuditLogs.tsx     # Audit trail viewer
-│   │   │   └── ...               # Other pages
-│   │   ├── api/                  # Axios client
-│   │   ├── lib/                  # Utils
-│   │   └── ...
-│   ├── public/                   # Static assets
-│   ├── nginx.conf                # NGINX configuration
-│   ├── Dockerfile                # Frontend container definition
-│   ├── package.json              # Node.js dependencies
-│   ├── vite.config.js            # Vite build configuration
-│   └── tailwind.config.cjs       # Tailwind CSS configuration
-│
-├── nginx/
-│   └── nginx.conf                # Production NGINX config
-│
-├── docker-compose.yml            # Multi-container orchestration
-└── README.md                     # This file
-```
+| Layer | Component | Technology | Purpose |
+|---|---|---|---|
+| **Frontend** | Framework | **React 19** + **Vite** | Single Page Application with dynamic state |
+| | Styling | **Vanilla CSS + Tailwind** | Responsive Neo-Brutalist design |
+| | Icons | **Lucide React** | Enterprise visual hierarchy |
+| | HTTP Client | **Axios** | Token-authenticated REST communication |
+| **Backend** | Framework | **FastAPI** | High-performance ASGI Python framework |
+| | Server | **Uvicorn** | Asynchronous production server |
+| | Auth & RBAC | **JWT (python-jose) + passlib** | Stateless token authentication & permission claims |
+| | Cryptography | **SHA-256 + RSA-2048** | Document integrity and digital signatures |
+| **Data & Cloud** | Database | **Supabase (PostgreSQL)** / **Cosmos DB** | Structured documents, audit logs, and user profiles |
+| | Storage | **Azure Blob Storage** | Unstructured binary file storage |
+| | Resilience | **SQLite Engine** | Zero-setup local fallback for offline/testing |
 
 ---
 
 ## ⚙️ How It Works
 
-### 1️⃣ Document Registration Flow (with Digital Signatures)
+### 1️⃣ Document Registration Flow
 
 ```mermaid
 sequenceDiagram
     User->>Frontend: Upload Document
-    Frontend->>Backend: POST /register
-    Backend->>Backend: Check PERM_REGISTER_DOCUMENT
-    Backend->>Backend: Generate SHA-256 Hash
-    Backend->>Azure Key Vault: Sign Hash (RSA-2048)
-    Azure Key Vault-->>Backend: Return Signature
-    Backend->>Azure Blob: Store Document
-    Backend->>Cosmos DB: Store Hash + Signature + Metadata
-    Backend->>Alert System: Create SUCCESS Alert
-    Backend->>Cosmos DB: Log Audit Event (REGISTER)
-    Backend-->>Frontend: Return Hash + Signature + Status
-    Frontend->>Frontend: Display Signature Info
-    Frontend->>Frontend: Update Alert Badge
-    Frontend-->>User: Display Registration Success
+    Frontend->>Backend: POST /register (with Bearer JWT)
+    Backend->>Backend: Verify PERM_REGISTER_DOCUMENT
+    Backend->>Backend: Generate SHA-256 Cryptographic Hash
+    Backend->>Backend: Sign Hash with Digital Signature
+    Backend->>Azure Blob: Store Binary Document
+    Backend->>Database: Store Hash + Signature Metadata
+    Backend->>Database: Log Audit Event (REGISTER, SUCCESS)
+    Backend->>Alert System: Create Success Alert
+    Backend-->>Frontend: Return Hash, Signature, & Status
+    Frontend-->>User: Display Registration Success & Cryptographic Proof
 ```
 
-### 2️⃣ Document Verification Flow (with Signature Validation)
+### 2️⃣ Document Verification Flow (Tamper Detection)
 
 ```mermaid
 sequenceDiagram
-    User->>Frontend: Upload Document
+    User->>Frontend: Upload Document for Verification
     Frontend->>Backend: POST /verify
-    Backend->>Backend: Generate SHA-256 Hash
-    Backend->>Cosmos DB: Retrieve Stored Hash + Signature
-    Backend->>Backend: Compare Hashes
-    Backend->>Azure Key Vault: Verify Signature
+    Backend->>Backend: Generate SHA-256 Hash of Uploaded File
+    Backend->>Database: Retrieve Original Hash & Signature
     alt Hashes Match & Signature Valid
-        Backend->>Cosmos DB: Log AUTHENTIC
-        Backend-->>Frontend: Return AUTHENTIC + Valid Sig
-    else Hashes Differ
-        Backend->>Alert System: Create CRITICAL Tampering Alert
-        Backend->>Cosmos DB: Log TAMPERED
-        Backend-->>Frontend: Return TAMPERED
-    else Signature Invalid
-        Backend->>Alert System: Create WARNING Invalid Sig Alert
-        Backend->>Cosmos DB: Log INVALID_SIGNATURE
-        Backend-->>Frontend: Return TAMPERED + Invalid Sig
+        Backend->>Database: Log Audit Event (VERIFY, AUTHENTIC)
+        Backend-->>Frontend: Return Status: AUTHENTIC
+        Frontend-->>User: Display Green Verification Badge
+    else Hash Mismatch (File Modified)
+        Backend->>Database: Log Audit Event (VERIFY, TAMPERED)
+        Backend->>Alert System: Trigger CRITICAL Tampering Alert
+        Backend-->>Frontend: Return Status: TAMPERED
+        Frontend-->>User: Display Critical Tamper Warning & Alert
     end
-    Frontend->>Frontend: Display Signature Status
-    Frontend-->>User: Display Verification Result
 ```
+
+---
+
+## 🔒 Security Principles & Interview Defense
+
+| Concept | Implementation in DocVault | Why it Matters |
+|---|---|---|
+| **Integrity vs Authenticity** | SHA-256 provides **integrity**; RSA-2048 signatures provide **authenticity & non-repudiation**. | A hash proves a file has not changed. A signature proves *who* registered and authorized it. |
+| **Avalanche Effect** | Cryptographic hashing guarantees that altering even a single whitespace or bit modifies ~50% of the hash output. | Guarantees deterministic, foolproof detection of unauthorized document tampering. |
+| **Granular RBAC** | 4 roles (`admin`, `document_owner`, `auditor`, `guest`) enforced at the endpoint level via FastAPI dependencies. | Prevents privilege escalation and enforces the Principle of Least Privilege. |
+| **Immutable Audit Logging** | Append-only event stream tracking every verification, registration, and tampering incident. | Fulfills regulatory compliance requirements (SOX, HIPAA, ISO 27001). |
+| **Decoupled Architecture** | Adapter pattern with cloud database (Supabase) and local engine fallback (SQLite). | Enterprise resilience: prevents single-point-of-failure cloud dependency during testing or outages. |
+
+---
+
+## 👥 Role-Based Access Control (RBAC) Matrix
+
+| Permission | Admin 👑 | Document Owner 📄 | Auditor 🔍 | Guest 👤 |
+|---|:---:|:---:|:---:|:---:|
+| **Register Documents** | ✅ | ✅ | ❌ | ❌ |
+| **Verify Documents** | ✅ | ✅ | ✅ | ✅ |
+| **View Full Audit Logs** | ✅ | ❌ | ✅ | ❌ |
+| **Export Audit Logs** | ✅ | ❌ | ✅ | ❌ |
+| **Manage Users & Roles** | ✅ | ❌ | ❌ | ❌ |
+| **View System Stats** | ✅ | ❌ | ❌ | ❌ |
+| **View Own Documents** | ✅ | ✅ | ✅ (All) | ❌ |
 
 ---
 
 ## 🚦 Quick Start
 
 ### Prerequisites
+- **Python 3.10+**
+- **Node.js 18+**
 
-- **Docker** (v20.10+) and **Docker Compose** (v2.0+)
-- **Node.js** (v18+) for local frontend development
-- **Python** (v3.10+) for local backend development
-- **Azure Account** with:
-  - Storage Account (for Blob Storage)
-  - Cosmos DB Account (for database)
-
-### Environment Variables
-
-Create `backend/.env`:
-
-```env
-# Azure Blob Storage
-AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
-
-# Azure Cosmos DB
-COSMOS_ENDPOINT=https://your-cosmos-account.documents.azure.com:443/
-COSMOS_KEY=your-cosmos-key-here
-COSMOS_DATABASE=docvault
-COSMOS_CONTAINER=documents
-
-# Keys
-AZURE_TENANT_ID=...
-AZURE_CLIENT_ID=...
-AZURE_CLIENT_SECRET=...
-KEY_VAULT_URL=https://your-vault.vault.azure.net/
-```
-
-### 🐳 Running with Docker (Recommended)
+### 1. Backend Setup
 
 ```bash
-# Clone repository
-git clone https://github.com/Jatin-code16/varitydoc.git
-cd varitydoc
-
-# Configure environment variables
-cp backend/.env.example backend/.env
-# Edit backend/.env with your Azure credentials
-
-# Build and start all services
-docker compose up --build
-
-# Access the application
-# Frontend: http://localhost
-# Backend API: http://localhost/api/docs
-```
-
-### 💻 Local Development
-
-#### Backend
-
-```bash
+# Navigate to backend directory
 cd backend
+
+# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Windows:
+.\venv\Scripts\Activate.ps1
+# macOS/Linux:
+source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Start backend server
 uvicorn main:app --reload --port 8000
 ```
 
-#### Frontend
+> **Backend is live at:** `http://localhost:8000`  
+> **Interactive Swagger Docs:** `http://localhost:8000/docs`
+
+### 2. Frontend Setup
+
+In a new terminal window:
 
 ```bash
+# Navigate to frontend directory
 cd frontend
+
+# Install dependencies
 npm install
+
+# Start Vite development server
 npm run dev
 ```
+
+> **Frontend is live at:** `http://localhost:5173`
+
+---
+
+## 🔑 Default Accounts
+
+The system automatically initializes a pre-seeded Admin user for evaluation:
+
+| Username | Password | Role | Access Level |
+|---|---|---|---|
+| `admin` | `adminpassword123` | **Admin** | Full system administration, audit logs, and user management |
+
+*(You can also use the **Sign Up** tab to create self-registered Document Owner accounts).*
+
+---
+
+## ⚙️ Environment Configuration
+
+Configuration is managed via `backend/.env`:
+
+```env
+# Azure Blob Storage (Optional for local testing; uses local disk fallback if omitted)
+AZURE_STORAGE_CONNECTION_STRING="your_azure_storage_connection_string_here"
+
+# Supabase Database Configuration
+SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_KEY="your-supabase-service-role-or-anon-key"
+```
+
+*(Note: If cloud variables are not provided, DocVault transparently activates its local SQLite fallback engine, allowing full functionality out of the box).*
 
 ---
 
 ## 📡 API Documentation
 
-### Base URL
-- **Development**: `http://localhost:8000`
-- **Production**: `http://your-domain/api`
-
-### Interactive API Docs
-
-FastAPI provides automatic interactive documentation:
-- **Swagger UI**: `http://localhost/api/docs`
-- **ReDoc**: `http://localhost/api/redoc`
+FastAPI generates automatic OpenAPI documentation:
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
 
 ### Key Endpoints
 
-#### 🔐 Authentication & User Management
-- `POST /login`: Authenticate and receive JWT.
-- `POST /register-user`: Create new user (Role Check).
-- `GET /me`: Get current user info & unread alerts.
-
-#### 📄 Document Operations
-- `POST /register`: Registers document hash & signature (Requires Permission).
-- `POST /verify`: Verifies document integrity & signature.
-
-#### 📊 Audit & Alerts
-- `GET /audit-logs`: List full system history (Admin/Auditor).
-- `GET /alerts`: Get active security alerts.
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `POST` | `/login` | Authenticate and obtain JWT access token | No |
+| `POST` | `/signup` | Self-register a new Document Owner account | No |
+| `GET` | `/me` | Get current user profile and permissions | Yes |
+| `POST` | `/register` | Hash, sign, and store document | Yes (`document_owner`, `admin`) |
+| `POST` | `/verify` | Check document integrity & signature validity | No |
+| `GET` | `/audit-logs` | Retrieve chronological audit history | Yes (`auditor`, `admin`) |
+| `GET` | `/alerts` | Get user/system security notifications | Yes |
+| `GET` | `/admin/stats` | System metrics & recent activity | Yes (`admin`) |
+| `GET` | `/admin/users` | List all registered system users | Yes (`admin`) |
 
 ---
 
-## 🚀 Deployment
+## 🐳 Docker Deployment (Optional)
 
-### Azure VM Setup
-
-#### 1. Create Azure Resources
-Create Resource Group, VM, Key Vault, Cosmos DB, and Storage Account via Azure Portal or CLI.
-
-#### 2. Configure VM
-SSH into your Azure VM, install Docker & Docker Compose.
+To run the entire system in isolated containers:
 
 ```bash
-# Configure environment
-git clone https://github.com/Jatin-code16/varitydoc.git
-cd varitydoc
-cp backend/.env.example backend/.env
-# Add Azure credentials
+docker compose up --build
 ```
-
-#### 3. Initial Deployment
-
-```bash
-docker compose up -d
-```
-
----
-
-## 🔐 Security Considerations
-
-### Implemented Security Measures
-
-✅ **Digital Signatures**: RSA-2048 signatures with Azure Key Vault for non-repudiation  
-✅ **Role-Based Access Control**: 4-tier permission system (admin/owner/auditor/guest)  
-✅ **Real-Time Security Alerts**: Automated threat detection and notifications  
-✅ **Cryptographic Hashing**: SHA-256 ensures document integrity  
-✅ **JWT Authentication**: Stateless token-based auth with role/permission claims  
-✅ **Environment Variables**: Sensitive credentials isolated from code  
-✅ **Azure Managed Services**: Built-in encryption and security  
-✅ **SSH Key Authentication**: Secure CI/CD deployment  
-✅ **Audit Logging**: Comprehensive activity tracking for compliance
-
----
-
-## 🧪 Testing
-
-### Manual Testing
-
-#### Register Document
-```bash
-curl -X POST "http://localhost/api/register" \
-  -H "Authorization: Bearer <token>" \
-  -F "file=@test.pdf" | jq
-```
-
-#### Verify Document
-```bash
-curl -X POST "http://localhost/api/verify" \
-  -H "Authorization: Bearer <token>" \
-  -F "file=@test.pdf" | jq
-```
-
----
-
-## 🔄 CI/CD Pipeline
-
-The project uses GitHub Actions for automated build and deployment:
-
-1.  **Build Workflow**: Checks out code, builds Frontend (Vite) & Backend (FastAPI) Docker images, and pushes to Docker Hub with Git SHA tags.
-2.  **Deploy Workflow**: Connects to Azure VM via SSH, pulls new images, and updates containers with zero downtime.
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Frontend: `http://localhost`
+- Backend API: `http://localhost/api/docs`
 
 ---
 
 ## 👤 Author
 
 **Jatin Naik**  
-Azure Major Project - Cloud Computing & DevOps
-
-**Project Focus Areas:**
-- Cloud-native architecture (Azure)
-- Containerization & orchestration (Docker/Compose)
-- CI/CD automation (GitHub Actions)
-- Microservices design patterns
-- Document integrity & cryptography
-
----
-
-## 🙏 Acknowledgments
-
-- **FastAPI** for excellent API framework
-- **React** ecosystem for modern frontend
-- **Azure** for reliable cloud infrastructure
-- **Docker** for containerization technology
+*DocVault - Enterprise Document Verification & Security System*
 
 ---
 
 <div align="center">
 
-**⭐ If you find this project useful, please consider giving it a star!**
-
-Built with ❤️ using Azure, Docker, React, and FastAPI
+Built with ❤️ using React, FastAPI, Python, and Modern Cloud Architecture
 
 </div>

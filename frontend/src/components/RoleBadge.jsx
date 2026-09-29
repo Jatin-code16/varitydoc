@@ -67,23 +67,24 @@ function RoleBadge({ role, showTooltip = true }) {
       </div>
       
       {showTooltip && tooltipVisible && (
-        <div className="roleBadgeTooltip">
+        <div className="roleBadgeTooltip waterTooltip">
+          <div className="roleBadgeTooltipGlassGlow"></div>
           <div className="roleBadgeTooltipHeader">
             <span className="roleBadgeTooltipIcon">{info.icon}</span>
             <span className="roleBadgeTooltipTitle">{info.label} Role</span>
           </div>
-          <p className="roleBadgeTooltipDesc" style={{ opacity: 0.8, lineHeight: 1.4 }}>
+          <p className="roleBadgeTooltipDesc">
             {info.description}
           </p>
           <div className="roleBadgeTooltipPerms">
-            <strong style={{ display: 'block', borderBottom: '1px solid currentColor', paddingBottom: '4px' }}>Permissions:</strong>
-            <ul>
+            <span className="roleBadgePermsHeader">PERMISSIONS</span>
+            <ul className="roleBadgePermsList">
               {info.permissions.map((perm, idx) => (
-                <li key={idx}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <li key={idx} className="roleBadgePermItem">
+                  <svg className="permCheckIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  {perm}
+                  <span>{perm}</span>
                 </li>
               ))}
             </ul>

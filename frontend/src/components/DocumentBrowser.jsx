@@ -80,6 +80,20 @@ export default function DocumentBrowser({ onNotify, currentUser }) {
 
   return (
     <div className="documentBrowser">
+      <div className="cardHeader" style={{ marginBottom: "2rem" }}>
+        <div>
+          <span className="liveStatusBadge" style={{ marginBottom: "0.5rem" }}>
+            IMMUTABLE DOCUMENT REGISTRY
+          </span>
+          <h2 className="cardTitle" style={{ fontSize: "1.85rem", marginTop: "0.4rem" }}>
+            Registered Document Ledger
+          </h2>
+          <p className="cardSubtitle">
+            Explore, filter, and inspect cryptographic fingerprints and signatures registered in the ledger.
+          </p>
+        </div>
+      </div>
+
       {/* Search Bar */}
       <div className="searchBar">
         <input

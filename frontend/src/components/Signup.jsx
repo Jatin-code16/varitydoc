@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/client";
+import logoImg from "../assets/logo.png";
 
 function Signup({ onBackToLogin }) {
   const [formData, setFormData] = useState({
@@ -105,13 +106,8 @@ function Signup({ onBackToLogin }) {
 
         {/* Header */}
         <div className="loginHeader">
-          <div className="loginIcon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="8.5" cy="7" r="4"/>
-              <line x1="20" y1="8" x2="20" y2="14"/>
-              <line x1="23" y1="11" x2="17" y2="11"/>
-            </svg>
+          <div className="loginIcon" style={{ background: "transparent", border: "none", boxShadow: "none" }}>
+            <img src={logoImg} alt="DocVault Logo" style={{ width: "76px", height: "76px", objectFit: "contain", filter: "drop-shadow(4px 4px 0px rgba(0,0,0,0.5))" }} />
           </div>
           <h1 className="loginTitle">Create Account</h1>
           <p className="loginSubtitle">Join DocVault to secure your documents</p>

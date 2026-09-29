@@ -14,8 +14,13 @@ def upload_file_to_blob(local_file_path: str, blob_name: str) -> None:
     """
     connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 
-    if not connection_string:
-        raise RuntimeError("Azure storage connection string not set")
+    if not connection_string or "your_azure_storage_connection_string_here" in connection_string:
+        # Fallback to local storage if Azure Storage is not yet configured
+        blob_dir = os.path.join("uploads", "blob_storage")
+        os.makedirs(blob_dir, exist_ok=True)
+        import shutil
+        shutil.copyfile(local_file_path, os.path.join(blob_dir, blob_name))
+        return
 
     try:
         blob_service_client = BlobServiceClient.from_connection_string(

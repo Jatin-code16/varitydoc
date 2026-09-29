@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/client";
+import { UploadCloud, FileText, X, RefreshCw, Zap, ShieldCheck } from "lucide-react";
 
 function Register({ onNotify, onAlertCreated }) {
   const [file, setFile] = useState(null);
@@ -163,11 +164,16 @@ function Register({ onNotify, onAlertCreated }) {
 
   return (
     <section>
-      <div className="cardHeader">
+      <div className="cardHeader" style={{ marginBottom: "2rem" }}>
         <div>
-          <h2 className="cardTitle">Register document</h2>
+          <span className="liveStatusBadge" style={{ marginBottom: "0.5rem" }}>
+            PHASE 01: IMMUTABLE REGISTRATION
+          </span>
+          <h2 className="cardTitle" style={{ fontSize: "1.85rem", marginTop: "0.4rem" }}>
+            Register Document in Ledger
+          </h2>
           <p className="cardSubtitle">
-            Upload a file to store its SHA-256 hash for future verification.
+            Upload any file to compute its deterministic SHA-256 cryptographic digest, apply an RSA digital signature, and anchor it into the tamper-evident registry.
           </p>
         </div>
       </div>
@@ -183,87 +189,129 @@ function Register({ onNotify, onAlertCreated }) {
               resetMessages();
             }}
           />
-          <div
-            className={isDragging ? "dropzone dropzoneActive" : "dropzone"}
-            onDragEnter={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsDragging(true);
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsDragging(true);
-            }}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsDragging(false);
-            }}
-            onDrop={onDrop}
-            onClick={() => document.getElementById(inputId)?.click()}
-          >
-            <div className="dropzoneLabel">
-              <span className="dropzoneLeft">
-                <span className="dropzoneTitle">
-                  {file ? "Selected file" : "Upload a document"}
-                </span>
-                <span className="dropzoneHint">
-                  {file ? file.name : "Click to browse or drag & drop"}
-                </span>
-              </span>
-              <span className="chip chipAccent">Browse</span>
+
+          {!file ? (
+            <div
+              className={isDragging ? "cyberDropzone cyberDropzoneActive" : "cyberDropzone"}
+              onDragEnter={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragging(true);
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragging(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragging(false);
+              }}
+              onDrop={onDrop}
+              onClick={() => document.getElementById(inputId)?.click()}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="cyberDropzoneIconWrap">
+                <UploadCloud size={38} strokeWidth={2.5} />
+              </div>
+              <h3 className="cyberDropzoneTitle">
+                {isDragging ? "DROP FILE TO ATTACH" : "DRAG & DROP DOCUMENT HERE"}
+              </h3>
+              <p className="cyberDropzoneSubtitle">
+                Click anywhere in this vault zone to select a local document. Supports PDF, DOCX, TXT, images, and binary artifacts (up to 25MB).
+              </p>
+              <div className="cyberDropzoneFormats">
+                <ShieldCheck size={14} /> SHA-256 Cryptographic Digest Engine
+              </div>
+              <button type="button" className="cyberDropzoneBtn">
+                📁 Browse Local Files
+              </button>
             </div>
-            <div className="subtle" style={{ marginTop: "8px" }}>
-              {file ? formatSize(file.size) : "Tip: you can also drag & drop a file here."}
-            </div>
-            {validationError && (
-              <div className="subtle" style={{ marginTop: "8px" }} aria-live="polite">
-                <span className="badge" style={{ borderColor: "color-mix(in oklab, var(--error) 60%, var(--border))" }}>
-                  {validationError}
+          ) : (
+            <div className="stagedCard">
+              <div className="stagedCardHeader">
+                <span className="stagedStatusBadge">
+                  <span className="livePulse"></span>
+                  DOCUMENT STAGED & READY
+                </span>
+                <span className="stagedFormatBadge">
+                  {file.name.includes(".") ? file.name.split(".").pop().toUpperCase() : "FILE"}
                 </span>
               </div>
-            )}
-          </div>
-        </div>
-
-        {file && !loading && !result && (
-          <div className="filePreview">
-            <div className="filePreviewIcon">📄</div>
-            <div className="filePreviewInfo">
-              <div className="filePreviewName">{file.name}</div>
-              <div className="filePreviewSize">{formatSize(file.size)}</div>
+              <div className="stagedCardBody">
+                <div className="stagedCardIcon">
+                  <FileText size={32} strokeWidth={2.5} />
+                </div>
+                <div className="stagedCardInfo">
+                  <h4 className="stagedCardName">{file.name}</h4>
+                  <div className="stagedCardMeta">
+                    <span className="stagedMetaItem">
+                      <strong>SIZE:</strong> {formatSize(file.size)}
+                    </span>
+                    <span className="stagedMetaItem">
+                      <strong>ALGORITHM:</strong> SHA-256 + RSA-2048
+                    </span>
+                  </div>
+                </div>
+                <div className="stagedCardActions">
+                  <button
+                    type="button"
+                    className="btn btnSmall btnSecondary"
+                    onClick={() => document.getElementById(inputId)?.click()}
+                    disabled={loading}
+                    title="Change file"
+                  >
+                    <RefreshCw size={14} /> Change
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btnSmall btnQuiet"
+                    onClick={() => {
+                      setFile(null);
+                      resetMessages();
+                    }}
+                    disabled={loading}
+                    title="Remove file"
+                  >
+                    <X size={14} /> Clear
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <button className="btn btnPrimary" type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <span className="spinner" />
-                Uploading…
-              </>
-            ) : (
-              "Register"
-            )}
-          </button>
-          <button
-            className="btn btnSmall btnQuiet"
-            type="button"
-            onClick={() => {
-              setFile(null);
-              resetMessages();
-            }}
-            disabled={loading || !file}
-          >
-            Clear
-          </button>
+          {validationError && (
+            <div style={{ marginTop: "1rem" }} aria-live="polite">
+              <span className="badge" style={{ borderColor: "var(--accent-secondary)", color: "var(--accent-secondary)" }}>
+                {validationError}
+              </span>
+            </div>
+          )}
         </div>
+
+        <button 
+          className="btn btnPrimary btnRegisterCTA" 
+          type="submit" 
+          disabled={loading || !file || Boolean(validationError)}
+        >
+          {loading ? (
+            <>
+              <span className="spinner" style={{ width: "20px", height: "20px", borderWidth: "3px", margin: 0 }} />
+              CRYPTOGRAPHICALLY SIGNING & REGISTERING…
+            </>
+          ) : (
+            <>
+              <Zap size={20} strokeWidth={2.5} />
+              REGISTER & SIGN DOCUMENT TO LEDGER
+            </>
+          )}
+        </button>
 
         {loading && (
-          <div className="progressWrap" aria-label="Upload progress">
-            <div className="progressBar" style={{ "--progress": `${progress}%` }} />
+          <div className="stagedProgressWrap" aria-label="Registration progress">
+            <div className="stagedProgressBar" style={{ width: `${progress}%` }} />
           </div>
         )}
       </form>

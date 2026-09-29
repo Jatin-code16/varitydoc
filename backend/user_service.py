@@ -1,60 +1,197 @@
+import os
 import uuid
 import secrets
+import sqlite3
+import logging
 from datetime import datetime, timedelta
 from typing import Optional, List
 
-from cosmos_service import database
-from auth import hash_password
+from auth import hash_password, verify_password
 from rbac import UserRole, validate_role
 
-users_container = database.get_container_client("users")
+logger = logging.getLogger(__name__)
+
+# Check Supabase
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+supabase_client = None
+if SUPABASE_URL and SUPABASE_KEY and "your_" not in SUPABASE_KEY:
+    try:
+        from supabase import create_client
+        supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    except Exception as e:
+        logger.warning(f"user_service: Could not connect to Supabase: {e}")
+
+SQLITE_DB_PATH = os.path.join(os.path.dirname(__file__), "docvault.db")
+
+def init_user_db():
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT,
+            password_hash TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'document_owner',
+            created_at TEXT NOT NULL,
+            is_active INTEGER DEFAULT 1,
+            last_login TEXT,
+            reset_token TEXT,
+            reset_token_expiry TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_user_db()
+
+
 
 
 def create_user(username: str, password: str, role: str = "document_owner", email: str = None):
-    """
-    Create a new user with specified role.
-    Default role is 'document_owner' for security.
-    """
-    # Validate role
+    """Create a new user with specified role."""
     if not validate_role(role):
         raise ValueError(f"Invalid role: {role}. Valid roles: {[r.value for r in UserRole]}")
     
+    user_id = str(uuid.uuid4())
+    created_at = datetime.utcnow().isoformat()
+    pwd_hash = hash_password(password)
+    user_email = email or f"{username}@docvault.local"
+
     user = {
-        "id": str(uuid.uuid4()),
+        "id": user_id,
         "username": username,
-        "email": email or f"{username}@docvault.local",
-        "password_hash": hash_password(password),
+        "email": user_email,
+        "password_hash": pwd_hash,
         "role": role,
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": created_at,
         "is_active": True,
         "last_login": None
     }
-    users_container.create_item(user)
+
+    # 1. Try Supabase
+    if supabase_client:
+        try:
+            supabase_client.table("users").insert(user).execute()
+            # Also keep local in sync
+            _save_local_user(user)
+            return user
+        except Exception as e:
+            logger.warning(f"Supabase create_user error: {e}. Saving to local SQLite.")
+
+    # 2. SQLite
+    _save_local_user(user)
     return user
 
 
-def get_user_by_username(username: str) -> Optional[dict]:
-    query = "SELECT * FROM c WHERE c.username=@username"
-    params = [{"name": "@username", "value": username}]
+def _save_local_user(user: dict):
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT OR REPLACE INTO users (id, username, email, password_hash, role, created_at, is_active, last_login)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        user["id"],
+        user["username"],
+        user["email"],
+        user["password_hash"],
+        user["role"],
+        user["created_at"],
+        1 if user.get("is_active", True) else 0,
+        user.get("last_login")
+    ))
+    conn.commit()
+    conn.close()
 
-    items = list(
-        users_container.query_items(
-            query=query,
-            parameters=params,
-            enable_cross_partition_query=True,
-        )
-    )
-    return items[0] if items else None
+
+def get_user_by_username(username: str) -> Optional[dict]:
+    # 1. Try Supabase
+    if supabase_client:
+        try:
+            res = supabase_client.table("users").select("*").eq("username", username).execute()
+            if res.data and len(res.data) > 0:
+                user = res.data[0]
+                user["is_active"] = bool(user.get("is_active", True))
+                return user
+        except Exception as e:
+            logger.warning(f"Supabase get_user_by_username error: {e}")
+
+    # 2. SQLite Fallback
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, email, password_hash, role, created_at, is_active, last_login, reset_token, reset_token_expiry FROM users WHERE username = ?", (username,))
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        return {
+            "id": row[0],
+            "username": row[1],
+            "email": row[2],
+            "password_hash": row[3],
+            "role": row[4],
+            "created_at": row[5],
+            "is_active": bool(row[6]),
+            "last_login": row[7],
+            "reset_token": row[8],
+            "reset_token_expiry": row[9]
+        }
+    return None
+
+
+def seed_default_admin():
+    """Ensure default admin user exists"""
+    try:
+        existing = get_user_by_username("admin")
+        if not existing:
+            create_user(
+                username="admin",
+                password="adminpassword123",
+                role="admin",
+                email="admin@docvault.local"
+            )
+            logger.info("Created default admin user (admin / adminpassword123)")
+    except Exception as e:
+        logger.warning(f"Could not seed admin user: {e}")
+
+try:
+    seed_default_admin()
+except Exception:
+    pass
 
 
 def get_all_users() -> List[dict]:
     """Get all users (admin only)"""
-    query = "SELECT c.id, c.username, c.email, c.role, c.created_at, c.is_active, c.last_login FROM c"
-    items = list(users_container.query_items(
-        query=query,
-        enable_cross_partition_query=True
-    ))
-    return items
+    # 1. Try Supabase
+    if supabase_client:
+        try:
+            res = supabase_client.table("users").select("id, username, email, role, created_at, is_active, last_login").execute()
+            if res.data:
+                for u in res.data:
+                    u["is_active"] = bool(u.get("is_active", True))
+                return res.data
+        except Exception as e:
+            logger.warning(f"Supabase get_all_users error: {e}")
+
+    # 2. SQLite Fallback
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, email, role, created_at, is_active, last_login FROM users")
+    rows = cursor.fetchall()
+    conn.close()
+    return [
+        {
+            "id": r[0],
+            "username": r[1],
+            "email": r[2],
+            "role": r[3],
+            "created_at": r[4],
+            "is_active": bool(r[5]),
+            "last_login": r[6]
+        }
+        for r in rows
+    ]
 
 
 def update_user_role(username: str, new_role: str) -> dict:
@@ -67,7 +204,18 @@ def update_user_role(username: str, new_role: str) -> dict:
         raise ValueError(f"User not found: {username}")
     
     user["role"] = new_role
-    users_container.upsert_item(user)
+
+    if supabase_client:
+        try:
+            supabase_client.table("users").update({"role": new_role}).eq("username", username).execute()
+        except Exception as e:
+            logger.warning(f"Supabase update_user_role error: {e}")
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET role = ? WHERE username = ?", (new_role, username))
+    conn.commit()
+    conn.close()
     return user
 
 
@@ -78,38 +226,62 @@ def deactivate_user(username: str) -> dict:
         raise ValueError(f"User not found: {username}")
     
     user["is_active"] = False
-    users_container.upsert_item(user)
+
+    if supabase_client:
+        try:
+            supabase_client.table("users").update({"is_active": False}).eq("username", username).execute()
+        except Exception as e:
+            logger.warning(f"Supabase deactivate_user error: {e}")
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET is_active = 0 WHERE username = ?", (username,))
+    conn.commit()
+    conn.close()
     return user
 
 
 def update_last_login(username: str):
     """Update user's last login timestamp"""
-    user = get_user_by_username(username)
-    if user:
-        user["last_login"] = datetime.utcnow().isoformat()
-        users_container.upsert_item(user)
+    now = datetime.utcnow().isoformat()
+    if supabase_client:
+        try:
+            supabase_client.table("users").update({"last_login": now}).eq("username", username).execute()
+        except Exception:
+            pass
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET last_login = ? WHERE username = ?", (now, username))
+    conn.commit()
+    conn.close()
 
 
 def change_user_password(username: str, current_password: str, new_password: str) -> dict:
     """Change user password after verifying current password"""
-    from auth import verify_password
-    
     user = get_user_by_username(username)
     if not user:
         raise ValueError("User not found")
     
-    # Verify current password
     if not verify_password(current_password, user["password_hash"]):
         raise ValueError("Current password is incorrect")
     
-    # Validate new password
     if len(new_password) < 6:
         raise ValueError("New password must be at least 6 characters")
     
-    # Update password
-    user["password_hash"] = hash_password(new_password)
-    users_container.upsert_item(user)
-    
+    new_hash = hash_password(new_password)
+
+    if supabase_client:
+        try:
+            supabase_client.table("users").update({"password_hash": new_hash}).eq("username", username).execute()
+        except Exception as e:
+            logger.warning(f"Supabase change_user_password error: {e}")
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET password_hash = ? WHERE username = ?", (new_hash, username))
+    conn.commit()
+    conn.close()
     return {"message": "Password changed successfully"}
 
 
@@ -119,15 +291,23 @@ def initiate_password_reset(username: str) -> str:
     if not user:
         raise ValueError("User not found")
     
-    # Generate a secure random token
     token = secrets.token_urlsafe(32)
     expiry = (datetime.utcnow() + timedelta(minutes=15)).isoformat()
-    
-    user["reset_token"] = token
-    user["reset_token_expiry"] = expiry
-    
-    users_container.upsert_item(user)
-    
+
+    if supabase_client:
+        try:
+            supabase_client.table("users").update({
+                "reset_token": token,
+                "reset_token_expiry": expiry
+            }).eq("username", username).execute()
+        except Exception as e:
+            logger.warning(f"Supabase initiate_password_reset error: {e}")
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE username = ?", (token, expiry, username))
+    conn.commit()
+    conn.close()
     return token
 
 
@@ -149,15 +329,24 @@ def complete_password_reset(username: str, token: str, new_password: str):
     if datetime.utcnow().isoformat() > stored_expiry:
         raise ValueError("Reset token has expired")
         
-    # Validation
     if len(new_password) < 6:
         raise ValueError("Password must be at least 6 characters")
         
-    # Update password and clear token
-    user["password_hash"] = hash_password(new_password)
-    user.pop("reset_token", None)
-    user.pop("reset_token_expiry", None)
-    
-    users_container.upsert_item(user)
-    
+    new_hash = hash_password(new_password)
+
+    if supabase_client:
+        try:
+            supabase_client.table("users").update({
+                "password_hash": new_hash,
+                "reset_token": None,
+                "reset_token_expiry": None
+            }).eq("username", username).execute()
+        except Exception as e:
+            logger.warning(f"Supabase complete_password_reset error: {e}")
+
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL WHERE username = ?", (new_hash, username))
+    conn.commit()
+    conn.close()
     return True

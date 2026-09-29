@@ -554,17 +554,21 @@ def get_current_user_info(current_user=Depends(get_current_user)):
     unread_alerts = len([a for a in get_user_alerts(current_user["username"], unread_only=True)])
     
     # Get full user details
-    full_user = get_user_by_username(current_user["username"])
+    full_user = get_user_by_username(current_user["username"]) or {}
+    role_perms = get_role_permissions(current_user["role"])
+    permissions_list = [k for k, v in role_perms.items() if v]
     
     return {
+        "id": full_user.get("id") or f"usr_{current_user['username']}",
         "username": current_user["username"],
-        "email": full_user.get("email", f"{current_user['username']}@docvault.local"),
+        "email": full_user.get("email") or f"{current_user['username']}@docvault.local",
         "role": current_user["role"],
         "role_description": get_role_description(current_user["role"]),
-        "permissions": get_role_permissions(current_user["role"]),
-        "is_active": current_user.get("is_active", True),
-        "created_at": current_user.get("created_at"),
-        "last_login": current_user.get("last_login"),
+        "permissions": permissions_list,
+        "permissions_map": role_perms,
+        "is_active": full_user.get("is_active", True),
+        "created_at": full_user.get("created_at"),
+        "last_login": full_user.get("last_login"),
         "unread_alerts": unread_alerts
     }
 

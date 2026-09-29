@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../api/client";
 import Signup from "./Signup";
 import ForgotPassword from "./ForgotPassword";
+import logoImg from "../assets/logo.png";
 
 function Login({ onLogin }) {
   const [showSignup, setShowSignup] = useState(false);
@@ -50,12 +51,8 @@ function Login({ onLogin }) {
 
         {/* Header */}
         <div className="loginHeader">
-          <div className="loginIcon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
+          <div className="loginIcon" style={{ background: "transparent", border: "none", boxShadow: "none" }}>
+            <img src={logoImg} alt="DocVault Logo" style={{ width: "76px", height: "76px", objectFit: "contain", filter: "drop-shadow(4px 4px 0px rgba(0,0,0,0.5))" }} />
           </div>
           <h1 className="loginTitle">Welcome to DocVault</h1>
           <p className="loginSubtitle">Secure document verification platform</p>

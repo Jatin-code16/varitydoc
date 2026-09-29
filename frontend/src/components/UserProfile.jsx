@@ -116,20 +116,20 @@ export default function UserProfile({ onNotify, currentUser }) {
           <div className="profileField">
             <span className="profileFieldLabel">Member Since</span>
             <div className="profileFieldValue">
-              {profileData?.created_at 
+              {profileData?.created_at && !isNaN(new Date(profileData.created_at).getTime())
                 ? new Date(profileData.created_at).toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                   }) 
-                : "Unknown"}
+                : "Active Member"}
             </div>
           </div>
           
-           <div className="profileField">
+          <div className="profileField">
             <span className="profileFieldLabel">User ID</span>
-            <div className="profileFieldValue" style={{fontSize: '0.9rem'}}>
-               {profileData?.id || "—"}
+            <div className="profileFieldValue" style={{fontSize: '0.85rem', fontFamily: 'monospace', wordBreak: 'break-all'}}>
+               {profileData?.id || profileData?.user_id || (currentUser?.username ? `usr_${currentUser.username}` : "—")}
             </div>
           </div>
         </div>
@@ -137,19 +137,35 @@ export default function UserProfile({ onNotify, currentUser }) {
         {/* Permissions */}
         <div className="profileSection">
            <h3>Permissions</h3>
-           <div style={{marginTop: '1rem'}}>
-             {profileData?.permissions?.length > 0 ? (
-               profileData.permissions.map((perm, idx) => (
-                 <span key={idx} className="permChip">
-                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                   </svg>
-                   {perm.replace(/_/g, " ")}
-                 </span>
-               ))
-             ) : (
-               <p className="noPermissions">No permissions assigned</p>
-             )}
+           <div style={{marginTop: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem'}}>
+             {(() => {
+               const permissionsList = Array.isArray(profileData?.permissions)
+                 ? profileData.permissions
+                 : profileData?.permissions && typeof profileData.permissions === "object"
+                 ? Object.entries(profileData.permissions)
+                     .filter(([_, allowed]) => Boolean(allowed))
+                     .map(([perm]) => perm)
+                 : [];
+
+               const formatPerm = (perm) =>
+                 String(perm)
+                   .replace(/^can_/, "")
+                   .replace(/_/g, " ")
+                   .replace(/\b\w/g, (c) => c.toUpperCase());
+
+               return permissionsList.length > 0 ? (
+                 permissionsList.map((perm, idx) => (
+                   <span key={idx} className="permChip">
+                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                     </svg>
+                     {formatPerm(perm)}
+                   </span>
+                 ))
+               ) : (
+                 <p className="noPermissions">No permissions assigned</p>
+               );
+             })()}
            </div>
         </div>
       </div>

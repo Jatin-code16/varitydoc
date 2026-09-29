@@ -23,3 +23,15 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local database & builds
+*.db
+backend/docvault.db
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
