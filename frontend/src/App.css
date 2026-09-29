@@ -2409,6 +2409,107 @@ tr:hover td {
   box-shadow: none;
 }
 
+.loginDivider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.25rem 0 0.85rem 0;
+}
+
+.loginDivider::before,
+.loginDivider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 2px dashed var(--border);
+  opacity: 0.35;
+}
+
+.loginDivider span {
+  padding: 0 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.loginGuestBtn {
+  width: 100%;
+  background: var(--surface);
+  border: 3px solid var(--border);
+  padding: 0.85rem 1rem !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  text-align: left;
+  margin-top: 0.25rem;
+}
+
+.loginGuestBtn:hover {
+  background: color-mix(in oklab, var(--accent) 15%, var(--surface));
+  border-color: var(--border);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px var(--border);
+}
+
+.loginGuestBtn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.guestBtnIcon {
+  width: 38px;
+  height: 38px;
+  background: var(--accent);
+  color: #000000;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.guestBtnText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.guestBtnTitle {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.guestBtnSub {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.guestBtnArrow {
+  color: var(--text-primary);
+  opacity: 0.6;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.loginGuestBtn:hover .guestBtnArrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
 .loginPasswordToggle {
   position: absolute;
   right: 14px;
@@ -3050,3 +3151,2038 @@ tr:hover td {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* ==========================================================================
+   ENHANCED TAB WORKSPACES (Documents, Audit Logs, Profile, Dashboard)
+   ========================================================================== */
+
+/* Shared Cyber Buttons & Loading States */
+.btnCyber {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px 0px var(--border);
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.btnCyber:hover:not(:disabled) {
+  background: var(--accent);
+  color: #000000;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px var(--border);
+}
+
+.btnCyber:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px var(--border);
+}
+
+.btnCyber:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnCyberAccent {
+  background: var(--accent);
+  color: #000000;
+}
+
+.btnCyberCancel {
+  background: transparent;
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+.btnCyberCancel:hover {
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.loadingStateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loadingStateText {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   1. DOCUMENT BROWSER TAB
+   ========================================================================== */
+.documentBrowserRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.docBrowserHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  border-bottom: 3px solid var(--border);
+}
+
+.docBrowserTitleGroup {
+  max-width: 650px;
+}
+
+.docLedgerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--accent);
+  color: #000000;
+  font-family: var(--font-mono);
+  font-weight: 900;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.docSectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem 0;
+}
+
+.docSectionDesc {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.docHeaderMetrics {
+  display: flex;
+  gap: 1rem;
+}
+
+.docMetricBox {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: 3px 3px 0px 0px var(--border);
+  padding: 0.65rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.metricNum {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.metricNumAccent {
+  color: #0284c7;
+}
+
+[data-theme="dark"] .metricNumAccent {
+  color: var(--accent);
+}
+
+.metricLabel {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+/* Document Control Bar */
+.docControlBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 0.75rem 1rem;
+}
+
+.docSearchContainer {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.searchIconInside {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.docSearchInput {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  padding: 0.6rem 2.2rem 0.6rem 2.4rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.docSearchInput:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.searchClearBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.docFilterTabs {
+  display: flex;
+  gap: 0.4rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  padding: 3px;
+}
+
+.docFilterBtn {
+  background: transparent;
+  border: none;
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.docFilterBtn:hover {
+  color: var(--text-primary);
+}
+
+.docFilterActive {
+  background: var(--surface);
+  color: var(--text-primary) !important;
+  box-shadow: 2px 2px 0px 0px var(--border);
+  border: 1px solid var(--border);
+}
+
+.docControlActions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.viewToggleGroup {
+  display: flex;
+  border: 2px solid var(--border);
+  background: var(--bg-primary);
+  padding: 2px;
+}
+
+.viewToggleBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.viewToggleActive {
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: 1px 1px 0px 0px var(--border);
+}
+
+/* Document Grid Cards */
+.docCardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1.25rem;
+}
+
+.docCyberCard {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.docCyberCard:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0px 0px var(--border);
+  border-color: var(--border);
+}
+
+.docCyberCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.docTypeIconWrapper {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+}
+
+.docTypeIconPdf { color: #e11d48; }
+.docTypeIconImg { color: #8b5cf6; }
+.docTypeIconData { color: #0284c7; }
+.docTypeIconCode { color: #10b981; }
+.docTypeIconDefault { color: var(--text-primary); }
+
+.statusSeal {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border: 1.5px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.statusSealSigned {
+  background: var(--accent);
+  color: #000000;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.statusSealHashed {
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+}
+
+.docCardTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.docHashContainer {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  padding: 0.5rem 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.docHashLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.docHashValueRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.docHashCode {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.docCopyBtn {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text-primary);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 1px 1px 0px 0px var(--border);
+  transition: all 0.1s ease;
+  flex-shrink: 0;
+}
+
+.docCopyBtn:hover {
+  background: var(--accent);
+  color: #000000;
+}
+
+.docCopyBtnSuccess {
+  background: var(--accent) !important;
+  color: #000000 !important;
+}
+
+.docMetaBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.docMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.docCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1.5px dashed var(--border);
+  padding-top: 0.75rem;
+}
+
+.docDetailsHint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.docDetailsArrow {
+  color: var(--text-secondary);
+  transition: transform 0.15s ease;
+}
+
+.docCyberCard:hover .docDetailsArrow {
+  transform: translate(2px, -2px);
+  color: var(--text-primary);
+}
+
+/* Document List View */
+.docListTableContainer {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  overflow-x: auto;
+}
+
+.docListTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.docListTable th {
+  background: var(--surface-alt);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--text-secondary);
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: 0.05em;
+}
+
+.docTableRow {
+  border-bottom: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.docTableRow:hover {
+  background: color-mix(in oklab, var(--accent) 8%, var(--surface));
+}
+
+.docTableRow td {
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+}
+
+.docTableRowName {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.docTableRowText {
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.docTableHashWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.docHashCodeSmall {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.docTableCopyBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.docTableUser,
+.docTableTime {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.btnTableInspect {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px 0px var(--border);
+  text-transform: uppercase;
+}
+
+.btnTableInspect:hover {
+  background: var(--accent);
+  color: #000000;
+}
+
+/* Document Certificate Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.docModalContent {
+  background: var(--surface);
+  border: 4px solid var(--border);
+  box-shadow: 12px 12px 0px 0px var(--border);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.docModalHeader {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 3px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: var(--surface-alt);
+}
+
+.docCertificateBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--accent);
+  color: #000000;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border: 1.5px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  margin-bottom: 0.4rem;
+}
+
+.docModalHeading {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0;
+  word-break: break-all;
+}
+
+.btnCloseCyber {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.btnCloseCyber:hover {
+  background: var(--accent-secondary);
+  color: #ffffff;
+}
+
+.docModalBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.docModalStatusBanner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: color-mix(in oklab, var(--accent) 15%, var(--surface));
+  border: 2px solid var(--border);
+  padding: 1rem;
+}
+
+.docModalStatusIcon {
+  width: 44px;
+  height: 44px;
+  background: var(--accent);
+  color: #000000;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.docModalStatusTitle {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.docModalStatusSub {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.docModalField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.docModalFieldHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.docModalFieldHeader label,
+.docModalField label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--text-secondary);
+}
+
+.docModalCopyBtn {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  box-shadow: 1.5px 1.5px 0px 0px var(--border);
+}
+
+.docModalCopyBtn:hover {
+  background: var(--accent);
+  color: #000000;
+}
+
+.docModalCodeBlock {
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  padding: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  word-break: break-all;
+  white-space: pre-wrap;
+  margin: 0;
+  user-select: all;
+}
+
+.signatureBlock {
+  font-size: 0.72rem;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.docModalGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.docModalGridItem {
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gridItemLabel {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.gridItemValue {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.gridItemValueCode {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-primary);
+}
+
+.docModalFooter {
+  padding: 1.25rem 1.5rem;
+  border-top: 3px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  background: var(--surface-alt);
+}
+
+/* Empty State */
+.docEmptyState {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 3rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.emptyStateGraphic {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.docEmptyState h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 900;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.docEmptyState p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  max-width: 400px;
+  margin: 0 0 1.5rem 0;
+}
+
+/* ==========================================================================
+   2. AUDIT LOGS TAB
+   ========================================================================== */
+.auditLogsRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.auditHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  border-bottom: 3px solid var(--border);
+}
+
+.auditTitleGroup {
+  max-width: 650px;
+}
+
+.auditHeaderBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #0284c7;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-weight: 900;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  margin-bottom: 0.75rem;
+}
+
+.auditSectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem 0;
+}
+
+.auditSectionDesc {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.auditHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.auditStatsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.auditStatCard {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.auditStatNum {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.auditStatCardGreen .auditStatNum {
+  color: #10b981;
+}
+
+.auditStatCardRed .auditStatNum {
+  color: #e11d48;
+}
+
+.auditStatLabel {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.auditControlBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 0.75rem 1rem;
+}
+
+.auditSearchInputWrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.auditSearchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.auditSearchInput {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  padding: 0.6rem 2.2rem 0.6rem 2.4rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.auditFilterPills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.auditFilterPill {
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.auditFilterPill:hover {
+  color: var(--text-primary);
+  background: var(--surface);
+}
+
+.auditFilterPillActive {
+  background: var(--accent) !important;
+  color: #000000 !important;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.auditTableContainer {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  overflow-x: auto;
+}
+
+.auditTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.auditTable th {
+  background: var(--surface-alt);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--text-secondary);
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: 0.05em;
+}
+
+.auditTableRow {
+  border-bottom: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.auditTableRow:hover {
+  background: color-mix(in oklab, var(--accent) 8%, var(--surface));
+}
+
+.auditTableRow td {
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+}
+
+.auditCellTime {
+  white-space: nowrap;
+}
+
+.auditTimeWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.auditClockIcon {
+  opacity: 0.7;
+}
+
+.auditActionTag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 900;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  color: var(--text-primary);
+}
+
+.auditFileWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.auditFileName {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.auditBadge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border: 1.5px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.auditBadgeAuthentic {
+  background: #10b981;
+  color: #000000;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.auditBadgeTampered {
+  background: #e11d48;
+  color: #ffffff;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+
+.auditBadgeNeutral {
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+}
+
+.auditCellHash {
+  font-family: var(--font-mono);
+}
+
+.auditHashCode {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.auditInspectBtn {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px 0px var(--border);
+  text-transform: uppercase;
+}
+
+.auditInspectBtn:hover {
+  background: var(--accent);
+  color: #000000;
+}
+
+.auditErrorNotice {
+  background: #ffe4e6;
+  border: 2px solid #e11d48;
+  color: #9f1239;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+}
+
+/* ==========================================================================
+   3. USER PROFILE TAB
+   ========================================================================== */
+.userProfileRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.profileHeroCard {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 6px 6px 0px 0px var(--border);
+  padding: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.profileHeroLeft {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profileHeroAvatar {
+  width: 76px;
+  height: 76px;
+  background: var(--accent);
+  color: #000000;
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarOnlineDot {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  background: #10b981;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+}
+
+.profileHeroMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.profileHeroBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profileSecurityChip {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 900;
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+  padding: 2px 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.profileHeroName {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.profileHeroEmail {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.profileHeroStats {
+  display: flex;
+  gap: 1.5rem;
+  border-left: 2px dashed var(--border);
+  padding-left: 1.5rem;
+}
+
+.profileStatItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profileStatLabel {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.profileStatValGreen {
+  font-family: var(--font-mono);
+  font-weight: 900;
+  font-size: 0.88rem;
+  color: #10b981;
+}
+
+.profileStatVal {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.profileDetailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.profileCardBox {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.profileCardBoxHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.profileCardBoxHeader h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.profileCardBoxSub {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0 0 1rem 0;
+}
+
+.profileCredentialList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profileCredItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.credLabel {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.credValueRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.credCode {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  padding: 0.35rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+  flex: 1;
+}
+
+.credCopyBtn {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 1.5px 1.5px 0px 0px var(--border);
+}
+
+.credCopyBtn:hover {
+  background: var(--accent);
+  color: #000000;
+}
+
+.credTimeWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profilePermsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.profilePermCard {
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.profileSecurityBox {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 5px 5px 0px 0px var(--border);
+  padding: 1.75rem;
+}
+
+.profileSecurityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.securityTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.securityIconWrap {
+  width: 44px;
+  height: 44px;
+  background: var(--surface-alt);
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.securityTitleGroup h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+
+.securityTitleGroup p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.profileChangePwdBtn {
+  font-size: 0.82rem;
+}
+
+.profilePasswordForm {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px dashed var(--border);
+}
+
+.passwordFormGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.passwordFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.passwordFormField label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.passwordInputWrap {
+  position: relative;
+}
+
+.passwordInput {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  padding: 0.65rem 2.4rem 0.65rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.passwordInput:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.passwordToggleBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.passwordFormActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ==========================================================================
+   4. ADMIN DASHBOARD TAB
+   ========================================================================== */
+.adminDashboardRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.adminDashHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  border-bottom: 3px solid var(--border);
+}
+
+.adminDashTitleGroup {
+  max-width: 650px;
+}
+
+.adminHeaderBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #FF3E00;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-weight: 900;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  margin-bottom: 0.75rem;
+}
+
+.adminSectionHeading {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem 0;
+}
+
+.adminSectionDesc {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.adminStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+}
+
+.adminStatCard {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.adminStatIconWrap {
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statIconDocs { background: var(--accent); color: #000000; }
+.statIconUsers { background: #0284c7; color: #ffffff; }
+.statIconAlerts { background: #FF3E00; color: #ffffff; }
+.statIconAudits { background: #8b5cf6; color: #ffffff; }
+
+.adminStatBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.adminStatNumber {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.adminStatTitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.adminStatFooter {
+  border-top: 1.5px dashed var(--border);
+  padding-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.statPulseDot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.statSubAccent { color: #0284c7; }
+.statSubAlert { color: #10b981; }
+.statSubPulse { color: #8b5cf6; }
+
+.adminActivityAndHealth {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .adminActivityAndHealth {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adminActivityCard,
+.adminHealthCard {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 1.25rem;
+}
+
+.adminCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.adminCardTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.adminCardTitleWrap h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.activityLivePill {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 900;
+  background: var(--accent);
+  color: #000000;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+}
+
+.adminActivityList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.adminActivityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  padding: 0.55rem 0.75rem;
+}
+
+.activityActionBadge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 900;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.activityDetails {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.activityFile {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activityTimestamp {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.activityEmpty {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.telemetryList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.telemetryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.telemetryLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.telemetryValGreen { color: #10b981; }
+.telemetryValCyan { color: #0284c7; }
+
+.telemetryBar {
+  height: 8px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+}
+
+.telemetryFill {
+  height: 100%;
+  background: #10b981;
+}
+
+.telemetryFillCyan {
+  background: #0284c7;
+}
+
+/* User Management */
+.adminUsersSection {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  box-shadow: 4px 4px 0px 0px var(--border);
+  padding: 1.5rem;
+}
+
+.adminUsersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.adminUsersTitleWrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.adminUsersTitleWrap h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+
+.adminUsersTitleWrap p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.adminUserSearchWrap {
+  position: relative;
+  width: 260px;
+}
+
+.adminUserSearchWrap svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.adminUserSearchInput {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  padding: 0.55rem 2rem 0.55rem 2.2rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.adminUserTableContainer {
+  overflow-x: auto;
+  border: 2px solid var(--border);
+}
+
+.adminUserTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.adminUserTable th {
+  background: var(--surface-alt);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--text-secondary);
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.userRow {
+  border-bottom: 1.5px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.userRowInactive {
+  border-bottom: 1.5px solid var(--border);
+  opacity: 0.6;
+  background: var(--bg-primary);
+}
+
+.userRow:hover {
+  background: color-mix(in oklab, var(--accent) 6%, var(--surface));
+}
+
+.adminUserTable td {
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+}
+
+.userCellName {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.userSmallAvatar {
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  color: #000000;
+  border: 1.5px solid var(--border);
+  font-family: var(--font-mono);
+  font-weight: 900;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.userUsernameText {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.userEmailText,
+.userDateText {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.userStatusPill {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 2px 7px;
+  border: 1.5px solid var(--border);
+  display: inline-block;
+}
+
+.userStatusActive {
+  background: #10b981;
+  color: #000000;
+}
+
+.userStatusInactive {
+  background: #e11d48;
+  color: #ffffff;
+}
+
+.roleEditWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.roleSelectInput {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 3px 6px;
+  color: var(--text-primary);
+}
+
+.btnIconAction {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btnIconSave {
+  background: var(--accent);
+  color: #000000;
+}
+
+.userActionBtnRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.btnActionEdit {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  box-shadow: 1.5px 1.5px 0px 0px var(--border);
+}
+
+.btnActionEdit:hover {
+  background: var(--accent);
+  color: #000000;
+}
+
+.btnActionDeactivate {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  box-shadow: 1.5px 1.5px 0px 0px var(--border);
+  color: #e11d48;
+}
+
+.btnActionDeactivate:hover {
+  background: #e11d48;
+  color: #ffffff;
+}
+

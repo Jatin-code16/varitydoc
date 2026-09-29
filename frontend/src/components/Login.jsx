@@ -165,6 +165,51 @@ function Login({ onLogin }) {
               </>
             )}
           </button>
+
+          <div className="loginDivider">
+            <span>OR EXPLORE INSTANTLY</span>
+          </div>
+
+          <button
+            type="button"
+            className="loginGuestBtn"
+            onClick={async () => {
+              setError(null);
+              setLoading(true);
+              try {
+                const res = await api.post("/login/guest");
+                onLogin(res.data);
+              } catch {
+                onLogin({
+                  access_token: "guest_local_token",
+                  token_type: "bearer",
+                  username: "Guest_User",
+                  role: "guest",
+                  permissions: ["can_verify_documents"],
+                  role_description: "Limited read-only access"
+                });
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+          >
+            <div className="guestBtnIcon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div className="guestBtnText">
+              <span className="guestBtnTitle">Continue as Guest</span>
+              <span className="guestBtnSub">Instant document verification • No password needed</span>
+            </div>
+            <svg className="guestBtnArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </form>
 
         {/* Footer */}

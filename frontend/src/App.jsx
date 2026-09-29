@@ -92,6 +92,14 @@ function App() {
   });
 
   const tabs = useMemo(() => {
+    if (auth?.role === "guest") {
+      return [
+        { id: "verify", label: "Verify", description: "Tamper & integrity check", icon: ShieldCheck },
+        { id: "documents", label: "Documents", description: "Browse document ledger", icon: FolderGit2 },
+        { id: "profile", label: "Profile", description: "Identity & RBAC claims", icon: UserCheck },
+      ];
+    }
+
     const baseTabs = [
       { id: "register", label: "Register", description: "Cryptographic hash & sign", icon: FileUp },
       { id: "verify", label: "Verify", description: "Tamper & integrity check", icon: ShieldCheck },
@@ -116,6 +124,12 @@ function App() {
 
     return baseTabs;
   }, [auth]);
+
+  useEffect(() => {
+    if (auth?.role === "guest" && activeTab === "register") {
+      setActiveTab("verify");
+    }
+  }, [auth, activeTab]);
 
   useEffect(() => {
     if (themePref === "system") {
@@ -324,7 +338,7 @@ function App() {
             <div className="panel">
               {activeTab === "register" && <Register onNotify={notify} onAlertCreated={refreshUnreadAlerts} />}
               {activeTab === "verify" && <Verify onNotify={notify} onAlertCreated={refreshUnreadAlerts} />}
-              {activeTab === "documents" && <DocumentBrowser onNotify={notify} currentUser={auth} />}
+              {activeTab === "documents" && <DocumentBrowser onNotify={notify} currentUser={auth} onSelectVerify={() => setActiveTab("verify")} />}
               {activeTab === "profile" && <UserProfile onNotify={notify} currentUser={auth} />}
               {activeTab === "dashboard" && auth.role === "admin" && (
                 <AdminDashboard onNotify={notify} />

@@ -413,6 +413,33 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     }
 
 
+@app.post("/login/guest")
+def login_guest():
+    guest_id = uuid.uuid4().hex[:6].upper()
+    guest_username = f"Guest_{guest_id}"
+    access_token = create_access_token(
+        data={"sub": guest_username, "role": "guest"}
+    )
+    
+    logger.info(
+        "Guest session started",
+        extra={
+            "event": "guest_login",
+            "username": guest_username,
+            "role": "guest"
+        }
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": guest_username,
+        "role": "guest",
+        "permissions": get_role_permissions("guest"),
+        "role_description": get_role_description("guest")
+    }
+
+
 # ============ ADMIN ENDPOINTS ============
 
 @app.get("/admin/users")
