@@ -1495,7 +1495,7 @@ tr:hover td {
 .loadingContainer {
   display: flex;
   flex-direction: column;
-  items-align: center;
+  align-items: center;
   justify-content: center;
   height: 300px;
   text-align: center;

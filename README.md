@@ -5,9 +5,9 @@
 <br /><br />
 
 # DocVault
-### Enterprise Document Integrity, Cryptographic Ledger & Security Ecosystem
+### Secure Document Verification & Cryptographic Integrity Platform
 
-**A cloud-native document verification and non-repudiation platform featuring SHA-256 integrity anchoring, RSA/Ed25519 digital signatures, multi-tier RBAC with role clearance delegation, and real-time security telemetry.**
+**A cloud-native platform featuring SHA-256 content integrity checks, digital-signature-based authenticity verification, role-based access control (RBAC), and security event logging.**
 
 <br />
 
@@ -18,41 +18,68 @@
 [![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
 [![Azure](https://img.shields.io/badge/Azure-Cloud_Storage-0078D4?style=for-the-badge&logo=microsoftazure)](https://azure.microsoft.com)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
-[![Security](https://img.shields.io/badge/Security-Enterprise_Grade-EA4335?style=for-the-badge&logo=security)](https://github.com)
+[![Architecture](https://img.shields.io/badge/Architecture-Deployment_Ready-2ea44f?style=for-the-badge&logo=security)](https://github.com)
 
 <br />
 
-[Explore Features](#-key-capabilities) • [System Architecture](#%EF%B8%8F-system-architecture) • [RBAC & Clearance Matrix](#-role-based-access-control-rbac--clearance-delegation) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation) • [Production Deployment](#-production-deployment)
+[Technical Pillars](#-core-security-architecture--responsibilities) • [Capabilities](#-key-capabilities) • [System Topology](#%EF%B8%8F-system-architecture) • [RBAC Model](#-role-based-access-control-rbac--clearance-delegation) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation) • [Deployment](#-deployment-ready-architecture)
 
 </div>
 
 ---
 
-## 📌 Executive Overview
+## 📌 Project Overview
 
-**DocVault** is an enterprise-grade document authenticity platform built for high-assurance workflows. It guarantees that any uploaded contract, certification, or data record is **tamper-evident, cryptographically authenticated, and verifiable anywhere in the world** without trusting third parties.
+**DocVault** is a secure document verification platform built to detect unauthorized modifications and verify signing identities. Rather than relying on third-party trust or opaque assertions, DocVault provides demonstrable integrity verification by combining **SHA-256 cryptographic hashing**, **asymmetric digital signatures**, **role-based access control (RBAC)**, and **append-oriented event logging**.
 
-### Why DocVault?
-In enterprise compliance, digital document forgery and unauthorized privilege escalation represent severe operational liabilities. DocVault resolves these challenges with:
-- **Zero-Trust Integrity Verification**: Guarantees that single-bit modifications produce a totally different cryptographic digest (the Avalanche Effect).
-- **Non-Repudiation**: Combines cryptographic SHA-256 digests with RSA/Ed25519 digital signatures signed with user identity keys.
-- **Supabase-First with Offline Local Resilience**: Data is persisted to cloud PostgreSQL via Supabase while maintaining background cache synchronization with a local SQLite engine for zero-downtime offline functionality.
-- **Role Elevation & Clearance Delegation**: Users can request elevated clearance tiers (`Document Owner`, `Security Auditor`, `Administrator`) with business justifications, reviewed by administrators via an executive dashboard.
+The system is organized around a high-performance FastAPI backend, a high-contrast React 19 single-page interface, cloud storage (Supabase PostgreSQL / Azure Blob Storage), and a local SQLite fallback engine for development and offline continuity.
+
+---
+
+## 🔍 Core Security Architecture & Responsibilities
+
+DocVault strictly separates distinct security concerns across four modular technical controls:
+
+```
+  SHA-256 Hashing
+        ↓
+  Detects whether document content changed (Content Integrity)
+
+  Digital Signatures (RSA / Ed25519)
+        ↓
+  Helps verify the document/signing identity (Identity Authenticity)
+
+  Role-Based Access Control (RBAC)
+        ↓
+  Controls what authenticated users are authorized to do (Authorization)
+
+  Append-Oriented Audit Logging
+        ↓
+  Records security-relevant events and actions (Traceability)
+```
+
+> **Technical Distinction:**
+> - **SHA-256 hashing** detects whether document bits have changed since registration.
+> - **Digital signatures** help verify the signing entity's identity against their public key.
+> - **RBAC** restricts API operations to authorized identities.
+> - **Audit logging** maintains a chronological record of registration, verification, and tamper events.
+>
+> Each control addresses a distinct security requirement without conflating cryptographic verification with legal compliance guarantees.
 
 ---
 
 ## 🎯 Key Capabilities
 
-| Capability | Technical Implementation | Value to Enterprise |
+| Capability | Technical Mechanism | Technical Function |
 |---|---|---|
-| **Deterministic Sealing** | SHA-256 cryptographic hashing | Instantaneous verification of file contents across any storage system. |
-| **Identity Anchoring** | RSA-2048 / Ed25519 digital signatures | Unequivocally proves who authorized and registered the record. |
-| **Multi-Tier RBAC** | 4-tier model (`Admin`, `Document Owner`, `Auditor`, `Guest`) | Enforces the Principle of Least Privilege across all endpoints. |
-| **Role Clearance Workflow** | Interactive request & admin approval pipeline | Controlled privilege elevation with audit trail accountability. |
-| **Hybrid Cloud Persistence** | Supabase (PostgreSQL) + Azure Blob Storage + SQLite fallback | High scalability in cloud environments with 100% offline uptime resilience. |
-| **Forensic Audit Logging** | Immutable chronological event stream | Satisfies strict regulatory requirements (SOX, HIPAA, ISO 27001). |
-| **Real-Time Security Alerts** | Automated polling & instant tampering notifications | Proactively flags tampering attempts and unauthorized API access. |
-| **Neo-Brutalist Cyber UI** | High-contrast React 19 interface with theme switching | High data density, responsive sidebar navigation, and accessible UX. |
+| **Content Integrity Checks** | SHA-256 cryptographic hashing | Computes a deterministic digest to detect single-bit modifications in document files. |
+| **Identity Verification** | RSA-2048 / Ed25519 digital signatures | Signs the document digest with an identity key to establish signing attribution. |
+| **Role-Based Access Control** | 4-tier model (`Admin`, `Document Owner`, `Auditor`, `Guest`) | Enforces the Principle of Least Privilege across all API endpoints. |
+| **Role Clearance Pipeline** | Justification-based request & review workflow | Provides structured privilege elevation reviewed and authorized by administrators. |
+| **Dual Persistence Engine** | Supabase (PostgreSQL) + Azure Blob Storage + SQLite fallback | Primary cloud persistence with local SQLite fallback for development and offline operation. |
+| **Append-Oriented Event Logging** | Event stream logging (action, result, timestamp, actor) | Maintains traceable audit records designed with security and auditability considerations. |
+| **Security Alerts** | Automated polling & hash mismatch notification | Flags document modification events and unauthorized access attempts in real time. |
+| **High-Density Web UI** | Modern React 19 interface with theme switching | Responsive workspace with sidebar navigation, search filtering, and inspection views. |
 
 ---
 
@@ -70,15 +97,15 @@ graph TD
     end
 
     subgraph Security & Verification Engine
-    API --> HashService[SHA-256 Avalanche Hasher]
+    API --> HashService[SHA-256 Cryptographic Hasher]
     API --> SigService[Digital Signature RSA/Ed25519 Engine]
-    API --> AlertEngine[Real-Time Security Telemetry & Alerts]
+    API --> AlertEngine[Security Telemetry & Event Alerts]
     end
 
-    subgraph Dual Persistence & Storage Layer
+    subgraph Persistence & Storage Layer
     API -->|Primary Cloud DB| Supabase[(Supabase PostgreSQL Database)]
     API -->|Binary Object Store| AzureBlob[(Azure Blob Storage)]
-    API -.->|Offline Sync & Fallback| SQLite[(Local SQLite Resilient Storage)]
+    API -.->|Offline Sync & Fallback| SQLite[(Local SQLite Storage Engine)]
     end
 ```
 
@@ -93,19 +120,19 @@ sequenceDiagram
     participant DB as Supabase / SQLite
     actor Admin as System Administrator
 
-    User->>UI: Request Role Access (e.g. Auditor/Admin + Justification)
+    User->>UI: Request Role Access (e.g., Auditor/Admin + Justification)
     UI->>API: POST /roles/request { requested_role, reason }
-    API->>DB: Record new role_request (status: pending)
-    API-->>UI: Request queued for administrative review
+    API->>DB: Record role_request (status: pending)
+    API-->>UI: Request queued for review
     Admin->>UI: Access Admin Dashboard (Role Requests Panel)
     UI->>API: GET /admin/role-requests
     API->>DB: Fetch pending clearance requests
     API-->>UI: Render pending requests with justification
     Admin->>UI: Click "Approve & Grant Role"
     UI->>API: POST /admin/role-requests/{id}/review { status: approved }
-    API->>DB: Update role_request status & elevate user role
-    API-->>UI: Role updated on live ledger
-    UI-->>User: Elevated permissions active immediately
+    API->>DB: Update role_request & elevate user role
+    API-->>UI: Role updated in database
+    UI-->>User: Elevated permissions active on next request
 ```
 
 ---
@@ -119,24 +146,46 @@ DocVault enforces endpoint-level authorization using fine-grained permissions em
 | **Register & Seal Documents** | ✅ | ✅ | ❌ | ❌ |
 | **Verify Document Integrity** | ✅ | ✅ | ✅ | ✅ |
 | **Inspect System-Wide Documents** | ✅ | ❌ (Own only) | ✅ (All) | ❌ |
-| **Examine Forensic Audit Logs** | ✅ | ❌ | ✅ | ❌ |
+| **Examine Audit Logs** | ✅ | ❌ | ✅ | ❌ |
 | **Export Audit Ledger (CSV/JSON)** | ✅ | ❌ | ✅ | ❌ |
 | **Review & Approve Role Requests** | ✅ | ❌ | ❌ | ❌ |
 | **Manage & Deactivate Users** | ✅ | ❌ | ❌ | ❌ |
-| **View Executive Metrics & Health** | ✅ | ❌ | ❌ | ❌ |
+| **View System Telemetry & Health** | ✅ | ❌ | ❌ | ❌ |
 | **Request Role Elevation** | ❌ (Root) | ✅ | ✅ | ✅ |
 
 ---
 
-## 🔒 Security Principles & Interview Defense
+## 🔒 Security Principles & Technical Rationale
 
-| Concept | DocVault Implementation | Security Rationale |
+| Principle | DocVault Implementation | Technical Rationale |
 |---|---|---|
-| **Integrity vs. Authenticity** | SHA-256 generates a mathematical digest for **integrity**; RSA/Ed25519 digital signatures bind the digest to an identity for **authenticity & non-repudiation**. | A hash proves data wasn't modified in transit. A signature proves *who* legally registered and endorsed it. |
-| **Avalanche Effect** | Cryptographic digest algorithms guarantee that even a 1-bit or 1-byte alteration drastically cascades across the output. | Guarantees tamper detection with zero tolerance for subtle document alterations. |
-| **Fail-Safe Offline Resilience** | Supabase-first pattern with an automatic SQLite offline fallback and background synchronization. | Eliminates single-point-of-failure vulnerabilities; local development and degraded network scenarios never crash the app. |
-| **Stateless Scalability** | Cryptographically signed JWT tokens with claims-based permissions and configurable expiration. | Enables horizontal scaling without session locking or server-side memory overhead. |
-| **Audit Immutability** | Append-only audit trail logging timestamps, IP addresses, file digests, and authorization results. | Guarantees non-destructible event records suitable for legal and regulatory compliance. |
+| **Integrity vs. Authenticity** | SHA-256 generates a mathematical digest for **content integrity**; digital signatures help verify **signing identity**. | A hash verifies that a file matches its recorded digest. A signature provides identity attribution for the entity that authorized it. |
+| **Avalanche Effect** | Cryptographic hashing guarantees that modifying even a single whitespace or bit drastically alters the digest output. | Enables reliable tamper detection through straightforward string comparison of hash digests. |
+| **Local Fallback Engine** | Cloud database (Supabase) queried first, with automatic local SQLite fallback and cache synchronization. | Avoids single-point-of-failure cloud dependence; enables full functional testing and development offline. |
+| **Stateless Authorization** | Cryptographically signed JWT tokens carrying claims-based roles and expiration timestamps. | Enables horizontal scaling without session store bottlenecks or server-side memory locks. |
+| **Append-Oriented Audit Records** | Sequential logging of timestamps, event types, file hashes, and authorization results. | Designed with security and auditability considerations relevant to regulated environments. |
+
+---
+
+## 🔐 System Access & Credentials
+
+### Production & Deployment Configuration
+In production environments, administrator credentials must be configured securely via environment variables:
+
+```env
+ADMIN_USERNAME=<configured during deployment>
+ADMIN_PASSWORD=<configured securely via environment variable>
+```
+
+### Evaluation & Development Environment
+For local evaluation and demonstration testing, a local development fixture is pre-seeded into the development database:
+
+| Account | Username | Password (Evaluation Only) | Role | Primary Scope |
+|---|---|---|---|---|
+| **Evaluation Admin** | `admin` | *(Default local demo fixture: `adminpassword123`)* | **Administrator** | User administration, clearance review, audit log inspection |
+| **Guest Sandbox** | *(None)* | *(No password)* | **Guest** | Unauthenticated sandbox to test document verification and inspect ledger claims |
+
+> **Security Notice:** The evaluation password above is intended strictly for local development and demonstration testing. Production deployments should configure unique credentials via environment variables and rotate them regularly.
 
 ---
 
@@ -194,19 +243,6 @@ npm run dev
 
 ---
 
-## 🔑 Default Credentials & Evaluation
-
-The system initializes with seeded accounts for evaluation:
-
-| Username | Password | Default Role | Capabilities |
-|---|---|---|---|
-| `admin` | `adminpassword123` | **Administrator** | Root privileges: User administration, role request approvals, full audit logs |
-| *(Guest Mode)* | *(No password)* | **Guest** | Instant sandbox access to test document verification and inspect ledger claims |
-
-*(You can also use the **Sign Up** tab to create self-registered Document Owner accounts or submit role elevation requests).*
-
----
-
 ## ⚙️ Environment Configuration
 
 Backend configuration is loaded via `backend/.env`:
@@ -223,7 +259,7 @@ SUPABASE_KEY="your-supabase-service-role-key"
 ALLOWED_ORIGINS="http://localhost:5173,https://your-domain.vercel.app"
 ```
 
-*(Note: If cloud credentials are not supplied, DocVault's offline engine automatically activates local SQLite storage, allowing full functionality out of the box).*
+*(Note: If cloud credentials are not supplied, DocVault's local engine automatically activates SQLite storage, allowing full offline functionality for local development).*
 
 ---
 
@@ -235,25 +271,25 @@ ALLOWED_ORIGINS="http://localhost:5173,https://your-domain.vercel.app"
 | `POST` | `/login` | Authenticate credentials and receive Bearer JWT | Public |
 | `POST` | `/signup` | Register a new Document Owner account | Public |
 | `GET` | `/me` | Retrieve profile, active claims, and unread alert count | Authenticated |
-| `POST` | `/users/change-password` | Rotate account password | Authenticated |
+| `POST` | `/users/change-password` | Update account password | Authenticated |
 
 ### Role Requests & Administration
 | Method | Endpoint | Description | Clearance |
 |---|---|---|---|
 | `POST` | `/roles/request` | Submit a role elevation request with justification | Authenticated |
 | `GET` | `/roles/requests/my` | View personal elevation request history and statuses | Authenticated |
-| `GET` | `/admin/role-requests` | View all pending and reviewed clearance requests | `admin` |
+| `GET` | `/admin/role-requests` | View pending and reviewed clearance requests | `admin` |
 | `POST` | `/admin/role-requests/{id}/review` | Approve or reject user clearance elevation | `admin` |
 | `GET` | `/admin/users` | List registered user identities and account statuses | `admin` |
-| `PUT` | `/admin/users/{user}/role` | Directly adjust user role | `admin` |
+| `PUT` | `/admin/users/{user}/role` | Adjust user role | `admin` |
 | `POST` | `/admin/users/{user}/deactivate` | Revoke user account access | `admin` |
 | `GET` | `/admin/stats` | System telemetry, document counters, and health metrics | `admin` |
 
 ### Document Registry & Verification
 | Method | Endpoint | Description | Clearance |
 |---|---|---|---|
-| `POST` | `/register` | Compute SHA-256, attach signature, seal document | `document_owner`, `admin` |
-| `POST` | `/verify` | Inspect file digest against ledger to detect tampering | Public |
+| `POST` | `/register` | Compute SHA-256, attach signature, register document | `document_owner`, `admin` |
+| `POST` | `/verify` | Inspect file digest against registered record to detect tampering | Public |
 | `GET` | `/documents` | List registered documents (filtered by ownership) | Authenticated |
 | `GET` | `/documents/search` | Search documents by filename | Authenticated |
 
@@ -267,7 +303,7 @@ ALLOWED_ORIGINS="http://localhost:5173,https://your-domain.vercel.app"
 
 ---
 
-## 🐳 Production Deployment
+## 🐳 Deployment-Ready Architecture
 
 ### Docker Compose
 
@@ -291,14 +327,13 @@ docker compose up --build
 ## 👤 Author & Maintainer
 
 **Jatin Naik**  
-*Project Lead & Systems Architect*  
 GitHub: [@Jatin-code16](https://github.com/Jatin-code16) • Repository: [DocVault](https://github.com/Jatin-code16/varitydoc)
 
 ---
 
 <div align="center">
 
-**DocVault** — Protecting digital document integrity with modern cryptographic engineering.
+**DocVault** — Secure document verification and cryptographic integrity platform.
 
 Built with React 19, FastAPI, Supabase, and Azure Cloud.
 
