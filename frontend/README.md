@@ -1,6 +1,6 @@
 # DocVault - Frontend Application
 
-Enterprise-grade React frontend for the DocVault document verification system with real-time security features.
+React frontend for the DocVault document verification system with security and document management features.
 
 ## 🏗️ Built With
 
@@ -11,7 +11,7 @@ Enterprise-grade React frontend for the DocVault document verification system wi
 
 ## 🎨 Key Features
 
-### Enterprise UI Components
+### UI Components
 
 1. **AlertPanel** - Real-time security notification center
    - Filter by severity (all/unread/critical)
