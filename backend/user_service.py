@@ -5,6 +5,9 @@ import sqlite3
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from auth import hash_password, verify_password
 from rbac import UserRole, validate_role
@@ -20,8 +23,9 @@ if SUPABASE_URL and SUPABASE_KEY and "your_" not in SUPABASE_KEY:
     try:
         from supabase import create_client
         supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        logger.info("user_service: Successfully connected to Supabase")
     except Exception as e:
-        logger.warning(f"user_service: Could not connect to Supabase: {e}")
+        logger.warning(f"user_service: Could not connect to Supabase: {e}. Using offline local storage.")
 
 SQLITE_DB_PATH = os.path.join(os.path.dirname(__file__), "docvault.db")
 
@@ -100,26 +104,56 @@ def create_user(username: str, password: str, role: str = "document_owner", emai
 
 
 def _save_local_user(user: dict):
+    """Persist user to local offline SQLite database"""
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT password_hash FROM users WHERE username = ?", (user.get("username"),))
+    existing = cursor.fetchone()
+    pwd_hash = user.get("password_hash") or (existing[0] if existing else "")
+
+    cursor.execute("""
+        INSERT OR REPLACE INTO users (id, username, email, password_hash, role, created_at, is_active, last_login, reset_token, reset_token_expiry)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        user.get("id") or str(uuid.uuid4()),
+        user.get("username"),
+        user.get("email"),
+        pwd_hash,
+        user.get("role", "document_owner"),
+        user.get("created_at") or datetime.utcnow().isoformat(),
+        1 if user.get("is_active", True) else 0,
+        user.get("last_login"),
+        user.get("reset_token"),
+        user.get("reset_token_expiry")
+    ))
+    conn.commit()
+    conn.close()
+
+
+def _save_local_role_request(req: dict):
+    """Persist role request to local offline SQLite database"""
     conn = sqlite3.connect(SQLITE_DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT OR REPLACE INTO users (id, username, email, password_hash, role, created_at, is_active, last_login)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO role_requests (id, username, current_role, requested_role, reason, status, created_at, reviewed_at, reviewed_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        user["id"],
-        user["username"],
-        user["email"],
-        user["password_hash"],
-        user["role"],
-        user["created_at"],
-        1 if user.get("is_active", True) else 0,
-        user.get("last_login")
+        req.get("id"),
+        req.get("username"),
+        req.get("current_role"),
+        req.get("requested_role"),
+        req.get("reason"),
+        req.get("status", "pending"),
+        req.get("created_at") or datetime.utcnow().isoformat(),
+        req.get("reviewed_at"),
+        req.get("reviewed_by")
     ))
     conn.commit()
     conn.close()
 
 
 def get_user_by_username(username: str) -> Optional[dict]:
+    """Retrieve user - Supabase first, SQLite offline fallback"""
     # 1. Try Supabase
     if supabase_client:
         try:
@@ -127,9 +161,11 @@ def get_user_by_username(username: str) -> Optional[dict]:
             if res.data and len(res.data) > 0:
                 user = res.data[0]
                 user["is_active"] = bool(user.get("is_active", True))
+                # Sync to local offline cache
+                _save_local_user(user)
                 return user
         except Exception as e:
-            logger.warning(f"Supabase get_user_by_username error: {e}")
+            logger.warning(f"Supabase get_user_by_username error: {e}. Falling back to offline local storage.")
 
     # 2. SQLite Fallback
     conn = sqlite3.connect(SQLITE_DB_PATH)
@@ -175,7 +211,7 @@ except Exception:
 
 
 def get_all_users() -> List[dict]:
-    """Get all users (admin only)"""
+    """Get all users (admin only) - Supabase first, SQLite offline fallback"""
     # 1. Try Supabase
     if supabase_client:
         try:
@@ -183,9 +219,11 @@ def get_all_users() -> List[dict]:
             if res.data:
                 for u in res.data:
                     u["is_active"] = bool(u.get("is_active", True))
+                    # Sync to local offline cache
+                    _save_local_user(u)
                 return res.data
         except Exception as e:
-            logger.warning(f"Supabase get_all_users error: {e}")
+            logger.warning(f"Supabase get_all_users error: {e}. Falling back to offline local storage.")
 
     # 2. SQLite Fallback
     conn = sqlite3.connect(SQLITE_DB_PATH)
@@ -366,6 +404,7 @@ def complete_password_reset(username: str, token: str, new_password: str):
 
 
 def create_role_request(username: str, current_role: str, requested_role: str, reason: str = "") -> dict:
+    """Create a role elevation request - Supabase first, SQLite offline fallback"""
     if not validate_role(requested_role):
         raise ValueError(f"Invalid role requested: {requested_role}")
     
@@ -375,27 +414,52 @@ def create_role_request(username: str, current_role: str, requested_role: str, r
     req_id = f"req_{uuid.uuid4().hex[:8]}"
     now = datetime.utcnow().isoformat()
 
-    conn = sqlite3.connect(SQLITE_DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO role_requests (id, username, current_role, requested_role, reason, status, created_at)
-        VALUES (?, ?, ?, ?, ?, 'pending', ?)
-    """, (req_id, username, current_role, requested_role, reason, now))
-    conn.commit()
-    conn.close()
-
-    return {
+    req_data = {
         "id": req_id,
         "username": username,
         "current_role": current_role,
         "requested_role": requested_role,
         "reason": reason,
         "status": "pending",
-        "created_at": now
+        "created_at": now,
+        "reviewed_at": None,
+        "reviewed_by": None
     }
+
+    # 1. Try Supabase first
+    if supabase_client:
+        try:
+            supabase_client.table("role_requests").insert(req_data).execute()
+            _save_local_role_request(req_data)
+            return req_data
+        except Exception as e:
+            logger.warning(f"Supabase create_role_request error: {e}. Saving to offline local storage.")
+
+    # 2. SQLite Fallback
+    _save_local_role_request(req_data)
+    return req_data
 
 
 def get_user_role_requests(username: str) -> list:
+    """Get all requests for a user - Supabase first, SQLite offline fallback"""
+    # 1. Try Supabase first
+    if supabase_client:
+        try:
+            res = (
+                supabase_client.table("role_requests")
+                .select("*")
+                .eq("username", username)
+                .order("created_at", desc=True)
+                .execute()
+            )
+            if res.data is not None:
+                for r in res.data:
+                    _save_local_role_request(r)
+                return res.data
+        except Exception as e:
+            logger.warning(f"Supabase get_user_role_requests error: {e}. Falling back to offline local storage.")
+
+    # 2. SQLite Fallback
     conn = sqlite3.connect(SQLITE_DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
@@ -424,6 +488,22 @@ def get_user_role_requests(username: str) -> list:
 
 
 def get_all_role_requests(status_filter: str = None) -> list:
+    """Get all role requests - Supabase first, SQLite offline fallback"""
+    # 1. Try Supabase first
+    if supabase_client:
+        try:
+            query = supabase_client.table("role_requests").select("*").order("created_at", desc=True)
+            if status_filter and status_filter != "all":
+                query = query.eq("status", status_filter)
+            res = query.execute()
+            if res.data is not None:
+                for r in res.data:
+                    _save_local_role_request(r)
+                return res.data
+        except Exception as e:
+            logger.warning(f"Supabase get_all_role_requests error: {e}. Falling back to offline local storage.")
+
+    # 2. SQLite Fallback
     conn = sqlite3.connect(SQLITE_DB_PATH)
     cursor = conn.cursor()
     if status_filter and status_filter != "all":
@@ -459,21 +539,51 @@ def get_all_role_requests(status_filter: str = None) -> list:
 
 
 def review_role_request(request_id: str, new_status: str, admin_username: str) -> dict:
+    """Review role request (approve/reject) - Supabase first, SQLite offline fallback"""
     if new_status not in ["approved", "rejected"]:
         raise ValueError("Status must be approved or rejected")
 
+    # Fetch request first (checks Supabase then local)
+    req_item = None
+    if supabase_client:
+        try:
+            res = supabase_client.table("role_requests").select("*").eq("id", request_id).execute()
+            if res.data and len(res.data) > 0:
+                req_item = res.data[0]
+        except Exception:
+            pass
+
+    if not req_item:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, username, requested_role FROM role_requests WHERE id = ?", (request_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if not row:
+            raise ValueError("Role request not found")
+        username = row[1]
+        requested_role = row[2]
+    else:
+        username = req_item["username"]
+        requested_role = req_item["requested_role"]
+
+    now = datetime.utcnow().isoformat()
+    update_data = {
+        "status": new_status,
+        "reviewed_at": now,
+        "reviewed_by": admin_username
+    }
+
+    # 1. Try Supabase update
+    if supabase_client:
+        try:
+            supabase_client.table("role_requests").update(update_data).eq("id", request_id).execute()
+        except Exception as e:
+            logger.warning(f"Supabase review_role_request error: {e}. Updating offline local storage.")
+
+    # 2. Update local SQLite
     conn = sqlite3.connect(SQLITE_DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, username, requested_role FROM role_requests WHERE id = ?", (request_id,))
-    row = cursor.fetchone()
-    if not row:
-        conn.close()
-        raise ValueError("Role request not found")
-
-    username = row[1]
-    requested_role = row[2]
-    now = datetime.utcnow().isoformat()
-
     cursor.execute("""
         UPDATE role_requests
         SET status = ?, reviewed_at = ?, reviewed_by = ?

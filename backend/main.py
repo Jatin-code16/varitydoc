@@ -10,7 +10,8 @@ from pydantic import BaseModel
 from user_service import (
     get_user_by_username, create_user, get_all_users, update_user_role, 
     deactivate_user, update_last_login, change_user_password,
-    initiate_password_reset, complete_password_reset
+    initiate_password_reset, complete_password_reset,
+    create_role_request, get_user_role_requests, get_all_role_requests, review_role_request
 )
 from auth import verify_password, create_access_token
 from dependencies import get_current_user
@@ -742,3 +743,81 @@ def list_all_documents(
         documents = get_all_documents(uploaded_by=current_user["username"])
     
     return {"count": len(documents), "documents": documents}
+
+
+# ============ ROLE ACCESS REQUESTS ============
+
+class RoleRequestPayload(BaseModel):
+    requested_role: str
+    reason: str = ""
+
+class RoleReviewPayload(BaseModel):
+    status: str  # "approved" or "rejected"
+
+@app.post("/roles/request")
+def submit_role_request(
+    payload: RoleRequestPayload,
+    current_user=Depends(get_current_user)
+):
+    """Submit a request to change or upgrade role"""
+    try:
+        req = create_role_request(
+            username=current_user["username"],
+            current_role=current_user.get("role", "guest"),
+            requested_role=payload.requested_role,
+            reason=payload.reason
+        )
+        return {"message": "Role request submitted successfully", "request": req}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/roles/requests/my")
+def get_my_role_requests(
+    current_user=Depends(get_current_user)
+):
+    """Get all role requests submitted by the current user"""
+    try:
+        requests = get_user_role_requests(current_user["username"])
+        return {"requests": requests}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/admin/role-requests")
+def get_admin_role_requests(
+    status: str = "all",
+    current_user=Depends(get_current_user)
+):
+    """Get all role requests for admin review"""
+    if not has_permission(current_user, PERM_CREATE_USERS) and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    try:
+        requests = get_all_role_requests(status_filter=status)
+        return {"requests": requests}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/role-requests/{request_id}/review")
+def review_user_role_request(
+    request_id: str,
+    payload: RoleReviewPayload,
+    current_user=Depends(get_current_user)
+):
+    """Approve or reject a role request (Admin only)"""
+    if not has_permission(current_user, PERM_CREATE_USERS) and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    try:
+        updated = review_role_request(
+            request_id=request_id,
+            new_status=payload.status,
+            admin_username=current_user["username"]
+        )
+        return {"message": f"Role request {payload.status}", "request": updated}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
