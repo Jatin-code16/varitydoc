@@ -486,7 +486,11 @@ export default function DocumentBrowser({ onNotify, currentUser, onSelectVerify 
                 <div className="docModalGridItem">
                   <span className="gridItemLabel">SIGNATURE STATUS</span>
                   <span className="gridItemValue">
-                    {selectedDoc.signature ? "RSA / Ed25519 Valid" : "Standard Hash Only"}
+                    {selectedDoc.signature ? (
+                      typeof selectedDoc.signature === 'object' && selectedDoc.signature.signer
+                        ? `Signed by @${selectedDoc.signature.signer}`
+                        : "Cryptographically Signed"
+                    ) : "Standard Hash Only"}
                   </span>
                 </div>
               </div>
@@ -494,8 +498,12 @@ export default function DocumentBrowser({ onNotify, currentUser, onSelectVerify 
               {/* Signature Block (if signed) */}
               {selectedDoc.signature && (
                 <div className="docModalField">
-                  <label>DIGITAL SIGNATURE</label>
-                  <pre className="docModalCodeBlock signatureBlock">{selectedDoc.signature}</pre>
+                  <label>DIGITAL SIGNATURE PAYLOAD</label>
+                  <pre className="docModalCodeBlock signatureBlock">
+                    {typeof selectedDoc.signature === 'object'
+                      ? JSON.stringify(selectedDoc.signature, null, 2)
+                      : String(selectedDoc.signature)}
+                  </pre>
                 </div>
               )}
             </div>

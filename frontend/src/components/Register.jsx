@@ -398,7 +398,9 @@ function Register({ onNotify, onAlertCreated }) {
                           </div>
                            <div className="result-value">
                              <div className="code-block mono" style={{fontSize: '0.75rem', maxHeight: '60px', overflowY: 'auto'}}>
-                               {result.signature}
+                               {typeof result.signature === 'object'
+                                 ? (result.signature.signature || JSON.stringify(result.signature, null, 2))
+                                 : String(result.signature)}
                              </div>
                            </div>
                         </div>
