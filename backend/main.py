@@ -111,7 +111,13 @@ async def register_document(
         file_hash = generate_sha256(file_path)
         
         # Sign the document hash with user's identity
-        signature_data = sign_document(file_hash, current_user["username"])
+        try:
+            signature_data = sign_document(file_hash, current_user["username"])
+        except RuntimeError as e:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(e)
+            )
 
         # Upload to Azure Blob Storage
         upload_file_to_blob(
@@ -153,6 +159,9 @@ async def register_document(
             "signature_info": get_signature_info(signature_data)
         }
 
+    except HTTPException:
+        log_audit_event(safe_filename, "REGISTER", "FAILED")
+        raise
     except Exception as e:
         log_audit_event(safe_filename, "REGISTER", "FAILED")
         raise HTTPException(status_code=500, detail=str(e))

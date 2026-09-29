@@ -153,7 +153,7 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
           </h1>
 
           <p className="landingHeroSubtitle">
-            Notarize, sign, and verify documents with mathematical certainty. Protect contracts, 
+            Register, sign, and verify documents using SHA-256 hashing and RSA digital signatures. Protect contracts, 
             certifications, and sensitive assets against modification with zero-knowledge cryptographic hashes.
           </p>
 
@@ -506,7 +506,7 @@ export default function LandingPage({ onLaunchLogin, onLaunchGuest, themePref, s
           <div className="footerLinksBlock">
             <span className="footerLinksHeader">SECURITY</span>
             <span>SHA-256 Digests</span>
-            <span>RSA-4096 Signatures</span>
+            <span>RSA-2048 / RS256 Signatures</span>
             <span>TLS 1.3 Encrypted</span>
           </div>
 

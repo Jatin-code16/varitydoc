@@ -47,7 +47,7 @@ DocVault strictly separates distinct security concerns across four modular techn
 
   Digital Signatures (RSA-2048 / RS256)
         ↓
-  Helps verify the document/signing identity (Identity Authenticity)
+  Verifies digest against configured RSA signing key (Signing Authenticity)
 
   Role-Based Access Control (RBAC)
         ↓
@@ -60,7 +60,7 @@ DocVault strictly separates distinct security concerns across four modular techn
 
 > **Technical Distinction:**
 > - **SHA-256 hashing** detects whether document bits have changed since registration.
-> - **Digital signatures** help verify the signing entity's identity against their public key.
+> - **Digital signatures** verify that the document digest was signed by the configured RSA signing key; the application records the associated user account for traceability.
 > - **RBAC** restricts API operations to authorized identities.
 > - **Audit logging** maintains a chronological record of registration, verification, and tamper events.
 >
@@ -159,7 +159,7 @@ DocVault enforces endpoint-level authorization using fine-grained permissions em
 
 | Principle | DocVault Implementation | Technical Rationale |
 |---|---|---|
-| **Integrity vs. Authenticity** | SHA-256 generates a mathematical digest for **content integrity**; digital signatures help verify **signing identity**. | A hash verifies that a file matches its recorded digest. A signature provides identity attribution for the entity that authorized it. |
+| **Integrity vs. Authenticity** | SHA-256 generates a digest for **content integrity**; digital signatures verify **signing authenticity** via the configured RSA key. | A hash verifies that file content matches its recorded digest. A signature proves the digest was signed by the configured key, while the application logs the associated user account. |
 | **Avalanche Effect** | Cryptographic hashing guarantees that modifying even a single whitespace or bit drastically alters the digest output. | Enables reliable tamper detection through straightforward string comparison of hash digests. |
 | **Local Fallback Engine** | Cloud database (Supabase) queried first, with automatic local SQLite fallback and cache synchronization. | Avoids single-point-of-failure cloud dependence; enables full functional testing and development offline. |
 | **Stateless Authorization** | Cryptographically signed JWT tokens carrying claims-based roles and expiration timestamps. | Enables horizontal scaling without session store bottlenecks or server-side memory locks. |

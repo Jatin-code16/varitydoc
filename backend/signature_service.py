@@ -53,13 +53,7 @@ def sign_document(document_hash: str, username: str) -> dict:
     crypto_client = get_crypto_client(username)
     
     if not crypto_client:
-        # Fallback: Use local signing (not recommended for production)
-        return {
-            "signature": base64.b64encode(document_hash.encode()).decode(),
-            "algorithm": "base64_fallback",
-            "signer": username,
-            "key_vault_used": False
-        }
+        raise RuntimeError("Digital signing service unavailable. Azure Key Vault is not configured or accessible.")
     
     try:
         # Convert hash to bytes
@@ -84,7 +78,7 @@ def sign_document(document_hash: str, username: str) -> dict:
 
 def verify_signature(document_hash: str, signature_data: dict) -> bool:
     """
-    Verify a document signature.
+    Verify a document signature using Azure Key Vault.
     
     Args:
         document_hash: SHA256 hash of the document
@@ -93,10 +87,8 @@ def verify_signature(document_hash: str, signature_data: dict) -> bool:
     Returns:
         True if signature is valid, False otherwise
     """
-    # Fallback verification
-    if not signature_data.get("key_vault_used", False):
-        expected = base64.b64encode(document_hash.encode()).decode()
-        return signature_data.get("signature") == expected
+    if not signature_data or not signature_data.get("key_vault_used", False):
+        return False
     
     crypto_client = get_crypto_client(signature_data.get("signer", ""))
     
@@ -127,7 +119,6 @@ def get_signature_info(signature_data: dict) -> str:
     """
     Get human-readable signature information.
     """
-    if signature_data.get("key_vault_used"):
-        return f"Signed by {signature_data['signer']} using Azure Key Vault (RS256)"
-    else:
-        return f"Signed by {signature_data['signer']} (Fallback mode)"
+    if signature_data and signature_data.get("key_vault_used"):
+        return f"Signed by {signature_data.get('signer', 'Unknown')} using Azure Key Vault (RS256)"
+    return "No digital signature"
