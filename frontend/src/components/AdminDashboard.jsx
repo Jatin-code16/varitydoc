@@ -18,12 +18,21 @@ import {
   X, 
   Sparkles,
   Zap,
-  Lock
+  Lock,
+  ArrowRight,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Inbox,
+  ShieldAlert
 } from "lucide-react";
 
 export default function AdminDashboard({ onNotify }) {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
+  const [roleRequests, setRoleRequests] = useState([]);
+  const [requestFilter, setRequestFilter] = useState("pending");
+  const [reviewingId, setReviewingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editingRole, setEditingRole] = useState(null);
   const [newRole, setNewRole] = useState("");
@@ -36,12 +45,14 @@ export default function AdminDashboard({ onNotify }) {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [statsRes, usersRes] = await Promise.all([
+      const [statsRes, usersRes, reqRes] = await Promise.all([
         api.get("/admin/stats"),
-        api.get("/admin/users")
+        api.get("/admin/users"),
+        api.get("/admin/role-requests")
       ]);
       setStats(statsRes.data);
       setUsers(usersRes.data.users || []);
+      setRoleRequests(reqRes.data.requests || []);
     } catch (err) {
       onNotify?.({
         title: "Dashboard Error",
@@ -50,6 +61,27 @@ export default function AdminDashboard({ onNotify }) {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReviewRoleRequest = async (requestId, decision) => {
+    setReviewingId(requestId);
+    try {
+      await api.post(`/admin/role-requests/${requestId}/review`, { status: decision });
+      onNotify?.({
+        title: decision === "approved" ? "Request Approved" : "Request Rejected",
+        message: `Role request has been ${decision} and user privileges have been updated.`,
+        variant: decision === "approved" ? "success" : "info"
+      });
+      await fetchDashboardData();
+    } catch (err) {
+      onNotify?.({
+        title: "Review Error",
+        message: err.response?.data?.detail || "Failed to review role request",
+        variant: "error"
+      });
+    } finally {
+      setReviewingId(null);
     }
   };
 
@@ -109,6 +141,15 @@ export default function AdminDashboard({ onNotify }) {
       u.role?.toLowerCase().includes(q)
     );
   }, [users, userSearch]);
+
+  const pendingRequestsCount = roleRequests.filter(r => r.status === "pending").length;
+  const approvedRequestsCount = roleRequests.filter(r => r.status === "approved").length;
+  const rejectedRequestsCount = roleRequests.filter(r => r.status === "rejected").length;
+
+  const filteredRoleRequests = useMemo(() => {
+    if (requestFilter === "all") return roleRequests;
+    return roleRequests.filter(r => r.status === requestFilter);
+  }, [roleRequests, requestFilter]);
 
   if (loading) {
     return (
@@ -269,6 +310,162 @@ export default function AdminDashboard({ onNotify }) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Role Clearance Requests & Privilege Delegation */}
+      <div className="adminRoleRequestsSection">
+        <div className="adminRoleRequestsHeader">
+          <div className="adminUsersTitleWrap">
+            <ShieldAlert size={20} />
+            <div>
+              <div className="roleHeaderBadgeRow">
+                <h3>Role Elevation Clearance Requests</h3>
+                {pendingRequestsCount > 0 ? (
+                  <span className="rolePendingBadge">
+                    <span className="statusDotPulse"></span>
+                    {pendingRequestsCount} ACTION REQUIRED
+                  </span>
+                ) : (
+                  <span className="roleSyncedBadge">ALL CLEAR</span>
+                )}
+              </div>
+              <p>Review incoming user access upgrade requests and authorize clearance levels.</p>
+            </div>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="roleFilterTabs">
+            <button
+              type="button"
+              className={`roleFilterBtn ${requestFilter === "pending" ? "roleFilterActive" : ""}`}
+              onClick={() => setRequestFilter("pending")}
+            >
+              Pending ({pendingRequestsCount})
+            </button>
+            <button
+              type="button"
+              className={`roleFilterBtn ${requestFilter === "all" ? "roleFilterActive" : ""}`}
+              onClick={() => setRequestFilter("all")}
+            >
+              All ({roleRequests.length})
+            </button>
+            <button
+              type="button"
+              className={`roleFilterBtn ${requestFilter === "approved" ? "roleFilterActive" : ""}`}
+              onClick={() => setRequestFilter("approved")}
+            >
+              Approved ({approvedRequestsCount})
+            </button>
+            <button
+              type="button"
+              className={`roleFilterBtn ${requestFilter === "rejected" ? "roleFilterActive" : ""}`}
+              onClick={() => setRequestFilter("rejected")}
+            >
+              Rejected ({rejectedRequestsCount})
+            </button>
+          </div>
+        </div>
+
+        {/* Request Items */}
+        {filteredRoleRequests.length === 0 ? (
+          <div className="adminEmptyRequestsBox">
+            <Inbox size={32} />
+            <p>No {requestFilter !== "all" ? requestFilter : ""} role requests found.</p>
+          </div>
+        ) : (
+          <div className="adminRoleRequestsGrid">
+            {filteredRoleRequests.map((req) => (
+              <div key={req.id} className={`adminRoleReqCard adminRoleReqCard-${req.status}`}>
+                <div className="reqCardTop">
+                  <div className="reqUserMeta">
+                    <div className="reqAvatar">
+                      {req.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <span className="reqUsername">{req.username}</span>
+                      <span className="reqTimestamp">
+                        {req.created_at ? new Date(req.created_at).toLocaleString() : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="reqStatusWrap">
+                    {req.status === "pending" && (
+                      <span className="roleStatusPill statusPending">
+                        <span className="statusDotPulse"></span>
+                        PENDING
+                      </span>
+                    )}
+                    {req.status === "approved" && (
+                      <span className="roleStatusPill statusApproved">
+                        <CheckCircle2 size={12} />
+                        APPROVED
+                      </span>
+                    )}
+                    {req.status === "rejected" && (
+                      <span className="roleStatusPill statusRejected">
+                        <XCircle size={12} />
+                        REJECTED
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Transition Flow */}
+                <div className="reqTransitionRow">
+                  <div className="reqRoleCol">
+                    <span className="reqColLabel">CURRENT</span>
+                    <RoleBadge role={req.current_role} />
+                  </div>
+                  <ArrowRight size={18} className="reqArrowIcon" />
+                  <div className="reqRoleCol">
+                    <span className="reqColLabel">REQUESTED</span>
+                    <RoleBadge role={req.requested_role} />
+                  </div>
+                </div>
+
+                {/* Justification Box */}
+                <div className="reqReasonQuote">
+                  <span className="quoteLabel">JUSTIFICATION:</span>
+                  <p className="quoteText">"{req.reason || "No explicit reason specified."}"</p>
+                </div>
+
+                {/* Card Actions or Review metadata */}
+                {req.status === "pending" ? (
+                  <div className="reqActionRow">
+                    <button
+                      type="button"
+                      className="btnActionApprove"
+                      onClick={() => handleReviewRoleRequest(req.id, "approved")}
+                      disabled={reviewingId === req.id}
+                      title="Approve Role Upgrade"
+                    >
+                      <Check size={14} strokeWidth={2.5} />
+                      <span>{reviewingId === req.id ? "Processing..." : "Approve & Grant Role"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="btnActionReject"
+                      onClick={() => handleReviewRoleRequest(req.id, "rejected")}
+                      disabled={reviewingId === req.id}
+                      title="Reject Request"
+                    >
+                      <X size={14} strokeWidth={2.5} />
+                      <span>Reject</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="reqReviewedFooter">
+                    <span className="reqReviewNote">
+                      Reviewed by <strong>@{req.reviewed_by || "admin"}</strong>
+                      {req.reviewed_at && ` on ${new Date(req.reviewed_at).toLocaleDateString()}`}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* User Management Administration */}

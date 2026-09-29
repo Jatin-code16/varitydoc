@@ -16,7 +16,13 @@ import {
   ShieldAlert, 
   CheckCircle2, 
   Sliders,
-  Sparkles
+  Sparkles,
+  Send,
+  Clock,
+  ArrowUpRight,
+  ShieldQuestion,
+  XCircle,
+  RotateCcw
 } from "lucide-react";
 
 export default function UserProfile({ onNotify, currentUser }) {
@@ -32,9 +38,73 @@ export default function UserProfile({ onNotify, currentUser }) {
     confirm_password: ""
   });
 
+  // Role Request states
+  const [roleRequests, setRoleRequests] = useState([]);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [requestedRole, setRequestedRole] = useState("document_owner");
+  const [requestReason, setRequestReason] = useState("");
+  const [submittingRoleReq, setSubmittingRoleReq] = useState(false);
+
   useEffect(() => {
     fetchProfile();
+    fetchRoleRequests();
   }, []);
+
+  const fetchRoleRequests = async () => {
+    try {
+      const res = await api.get("/roles/requests/my");
+      setRoleRequests(res.data.requests || []);
+    } catch {
+      // Non-blocking fallback
+    }
+  };
+
+  const handleRoleRequestSubmit = async (e) => {
+    e.preventDefault();
+    if (!requestedRole) {
+      onNotify?.({
+        title: "Role Required",
+        message: "Please select an access role to request.",
+        variant: "error"
+      });
+      return;
+    }
+
+    if (!requestReason.trim()) {
+      onNotify?.({
+        title: "Justification Required",
+        message: "Please state a reason for this clearance elevation.",
+        variant: "error"
+      });
+      return;
+    }
+
+    setSubmittingRoleReq(true);
+    try {
+      await api.post("/roles/request", {
+        requested_role: requestedRole,
+        reason: requestReason.trim()
+      });
+
+      onNotify?.({
+        title: "Elevation Request Submitted",
+        message: `Request for ${requestedRole.toUpperCase()} has been submitted for administrative review.`,
+        variant: "success"
+      });
+
+      setRequestReason("");
+      setShowRoleModal(false);
+      fetchRoleRequests();
+    } catch (err) {
+      onNotify?.({
+        title: "Request Failed",
+        message: err.response?.data?.detail || "Failed to submit role elevation request.",
+        variant: "error"
+      });
+    } finally {
+      setSubmittingRoleReq(false);
+    }
+  };
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -247,6 +317,227 @@ export default function UserProfile({ onNotify, currentUser }) {
               <p className="noPermissions">Standard read-only guest permissions active</p>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Role Elevation & Access Clearance */}
+      <div className="profileRoleRequestBox">
+        <div className="profileSecurityHeader">
+          <div className="securityTitleGroup">
+            <div className="securityIconWrap">
+              <ShieldQuestion size={20} />
+            </div>
+            <div>
+              <h3>Role Elevation & Privilege Delegation</h3>
+              <p>Request authorized clearance to different system operational tiers.</p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              type="button"
+              className="btnCyber btnCyberSm"
+              onClick={fetchRoleRequests}
+              title="Refresh Requests"
+            >
+              <RotateCcw size={13} />
+            </button>
+            {!showRoleModal && (
+              <button 
+                type="button" 
+                className="btnCyber btnCyberAccent profileRequestRoleBtn"
+                onClick={() => setShowRoleModal(true)}
+              >
+                <ArrowUpRight size={15} />
+                <span>Request Role Access</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Modal / Inline Form for requesting access */}
+        {showRoleModal && (
+          <form onSubmit={handleRoleRequestSubmit} className="roleRequestForm">
+            <div className="roleRequestFormIntro">
+              <span className="formSubheading">SELECT TARGET CLEARANCE LEVEL</span>
+              <p>Elevating your clearance tier grants new cryptographic operations across DocVault.</p>
+            </div>
+
+            <div className="roleSelectionGrid">
+              <label 
+                className={`roleOptionCard ${requestedRole === "document_owner" ? "roleOptionSelected" : ""}`}
+                onClick={() => setRequestedRole("document_owner")}
+              >
+                <input 
+                  type="radio" 
+                  name="requested_role" 
+                  value="document_owner" 
+                  checked={requestedRole === "document_owner"} 
+                  onChange={() => setRequestedRole("document_owner")}
+                />
+                <div className="roleOptionContent">
+                  <div className="roleOptionHeader">
+                    <span className="roleOptionTitle">Document Owner</span>
+                    <span className="rolePill ownerPill">DOC_OWNER</span>
+                  </div>
+                  <p className="roleOptionDesc">
+                    Enables document registration, SHA-256 sealing, private signature creation, and asset management.
+                  </p>
+                </div>
+              </label>
+
+              <label 
+                className={`roleOptionCard ${requestedRole === "auditor" ? "roleOptionSelected" : ""}`}
+                onClick={() => setRequestedRole("auditor")}
+              >
+                <input 
+                  type="radio" 
+                  name="requested_role" 
+                  value="auditor" 
+                  checked={requestedRole === "auditor"} 
+                  onChange={() => setRequestedRole("auditor")}
+                />
+                <div className="roleOptionContent">
+                  <div className="roleOptionHeader">
+                    <span className="roleOptionTitle">Security Auditor</span>
+                    <span className="rolePill auditorPill">AUDITOR</span>
+                  </div>
+                  <p className="roleOptionDesc">
+                    Full document ledger inspection, immutable audit log verification, compliance monitoring & tamper alerts.
+                  </p>
+                </div>
+              </label>
+
+              <label 
+                className={`roleOptionCard ${requestedRole === "admin" ? "roleOptionSelected" : ""}`}
+                onClick={() => setRequestedRole("admin")}
+              >
+                <input 
+                  type="radio" 
+                  name="requested_role" 
+                  value="admin" 
+                  checked={requestedRole === "admin"} 
+                  onChange={() => setRequestedRole("admin")}
+                />
+                <div className="roleOptionContent">
+                  <div className="roleOptionHeader">
+                    <span className="roleOptionTitle">Administrator</span>
+                    <span className="rolePill adminPill">ADMIN</span>
+                  </div>
+                  <p className="roleOptionDesc">
+                    Root privileges: Centralized user provisioning, role request approval, system analytics & operational controls.
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            <div className="roleReasonField">
+              <label htmlFor="role_reason">OPERATIONAL JUSTIFICATION / BUSINESS REASON</label>
+              <textarea
+                id="role_reason"
+                className="roleReasonTextarea"
+                rows={3}
+                placeholder="Explain why you require this clearance tier (e.g., need to upload department audit contracts or conduct security reviews)..."
+                value={requestReason}
+                onChange={(e) => setRequestReason(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="roleFormActions">
+              <button 
+                type="submit" 
+                className="btnCyber btnCyberAccent"
+                disabled={submittingRoleReq}
+              >
+                <Send size={15} />
+                <span>{submittingRoleReq ? "Transmitting Request..." : "Submit Clearance Request"}</span>
+              </button>
+              <button 
+                type="button" 
+                className="btnCyber btnCyberCancel"
+                onClick={() => {
+                  setShowRoleModal(false);
+                  setRequestReason("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* User's Existing Requests History */}
+        <div className="roleRequestHistoryWrap">
+          <div className="roleHistoryTitleRow">
+            <Clock size={15} />
+            <h4>Elevation Requests History</h4>
+            {roleRequests.length > 0 && (
+              <span className="roleHistoryCount">{roleRequests.length} record{roleRequests.length > 1 ? "s" : ""}</span>
+            )}
+          </div>
+
+          {roleRequests.length === 0 ? (
+            <div className="emptyRoleHistoryBox">
+              <p>No role elevation requests on record. Need expanded privileges? Click <strong>Request Role Access</strong> above.</p>
+            </div>
+          ) : (
+            <div className="roleHistoryTableContainer">
+              <table className="roleHistoryTable">
+                <thead>
+                  <tr>
+                    <th>TARGET ROLE</th>
+                    <th>JUSTIFICATION</th>
+                    <th>SUBMITTED</th>
+                    <th>STATUS</th>
+                    <th>REVIEWED BY</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roleRequests.map((req) => (
+                    <tr key={req.id}>
+                      <td>
+                        <RoleBadge role={req.requested_role} />
+                      </td>
+                      <td className="reqReasonCell">
+                        <span title={req.reason}>{req.reason || "No reason provided"}</span>
+                      </td>
+                      <td className="reqDateCell">
+                        {req.created_at ? new Date(req.created_at).toLocaleString() : "—"}
+                      </td>
+                      <td>
+                        {req.status === "pending" && (
+                          <span className="roleStatusPill statusPending">
+                            <span className="statusDotPulse"></span>
+                            PENDING REVIEW
+                          </span>
+                        )}
+                        {req.status === "approved" && (
+                          <span className="roleStatusPill statusApproved">
+                            <CheckCircle2 size={12} />
+                            APPROVED
+                          </span>
+                        )}
+                        {req.status === "rejected" && (
+                          <span className="roleStatusPill statusRejected">
+                            <XCircle size={12} />
+                            REJECTED
+                          </span>
+                        )}
+                      </td>
+                      <td className="reqReviewerCell">
+                        {req.reviewed_by ? (
+                          <span className="reviewerTag">@{req.reviewed_by}</span>
+                        ) : (
+                          <span className="reqWaiting">Awaiting Admin</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
